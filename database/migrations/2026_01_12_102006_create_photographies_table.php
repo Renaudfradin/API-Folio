@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('series');
             $table->string('city');
             $table->string('image');
+            $table->string('camera_id');
             $table->timestamps();
         });
     }

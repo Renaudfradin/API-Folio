@@ -16,9 +16,15 @@ class Photography extends Model
         'date',
         'series',
         'city',
+        'camera_id'
     ];
 
     protected $casts = [
         'date' => 'datetime',
     ];
+
+    public function camera()
+    {
+        return $this->belongsTo(Camera::class);
+    }
 }

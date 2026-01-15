@@ -17,17 +17,14 @@ class BlocksTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Titre')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('content')
+                    ->label('Contenu')
+                    ->sortable()
+                    ->limit(50)
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->recordActions([
                 ViewAction::make(),

@@ -47,19 +47,30 @@ return [
             'report' => false,
         ],
 
+        'scaleway' => [
+            'driver' => 's3',
+            'key' => env('SCALEWAY_KEY'),
+            'secret' => env('SCALEWAY_SECRET'),
+            'region' => 'fr-par',
+            'bucket' => env('SCALEWAY_BUCKET'),
+            'url' => env('OBJECT_STORAGE_PUBLIC_URL'),
+            'endpoint' => env('SCALEWAY_ENDPOINT', 'https://s3.fr-par.scw.cloud'),
+            'use_path_style_endpoint' => true,
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
+            'key' => env('AWS_ACCESS_KEY_ID', ''),
+            'secret' => env('AWS_SECRET_ACCESS_KEY', ''),
+            'region' => env('AWS_DEFAULT_REGION', ''),
+            'bucket' => env('AWS_BUCKET', ''),
+            'url' => env('AWS_URL', ''),
+            'endpoint' => env('AWS_ENDPOINT', ''),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
         ],
-
     ],
 
     /*

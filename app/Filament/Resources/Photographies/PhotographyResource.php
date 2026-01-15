@@ -24,6 +24,8 @@ class PhotographyResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Photography';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'renaudfradinphoto';
+
     public static function form(Schema $schema): Schema
     {
         return PhotographyForm::configure($schema);

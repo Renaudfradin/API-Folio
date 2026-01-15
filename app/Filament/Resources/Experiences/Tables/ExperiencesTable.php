@@ -18,19 +18,17 @@ class ExperiencesTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Titre')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Slug')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('type')
+                    ->label('Type')
+                    ->sortable()
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('type')

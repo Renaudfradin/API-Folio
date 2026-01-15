@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Stack>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\camera>
  */
-class StackFactory extends Factory
+class CameraFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -16,8 +17,11 @@ class StackFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->unique()->words(asText: true);
+
         return [
-            //
+            'name' => $name,
+            'slug' => Str::slug($name),
         ];
     }
 }

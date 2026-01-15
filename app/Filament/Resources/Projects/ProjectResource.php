@@ -24,6 +24,9 @@ class ProjectResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Project';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'renaudfradin';
+
+
     public static function form(Schema $schema): Schema
     {
         return ProjectForm::configure($schema);
@@ -37,13 +40,6 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return ProjectsTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

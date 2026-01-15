@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Stack extends Model
+class Camera extends Model
 {
     use HasFactory;
 
@@ -14,8 +14,8 @@ class Stack extends Model
         'slug',
     ];
 
-    public function projects()
+    public function photographs()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->hasMany(Photography::class);
     }
 }

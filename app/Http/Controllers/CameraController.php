@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreStackRequest;
-use App\Http\Requests\UpdateStackRequest;
-use App\Models\Stack;
+use App\Http\Requests\StorecameraRequest;
+use App\Http\Requests\UpdatecameraRequest;
+use App\Models\camera;
 
-class StackController extends Controller
+class CameraController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class StackController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStackRequest $request)
+    public function store(StorecameraRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class StackController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Stack $stack)
+    public function show(camera $camera)
     {
         //
     }
@@ -43,7 +43,7 @@ class StackController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Stack $stack)
+    public function edit(camera $camera)
     {
         //
     }
@@ -51,7 +51,7 @@ class StackController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateStackRequest $request, Stack $stack)
+    public function update(UpdatecameraRequest $request, camera $camera)
     {
         //
     }
@@ -59,7 +59,7 @@ class StackController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Stack $stack)
+    public function destroy(camera $camera)
     {
         //
     }

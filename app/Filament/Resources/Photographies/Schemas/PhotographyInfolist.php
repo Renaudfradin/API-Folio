@@ -12,19 +12,22 @@ class PhotographyInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
-                TextEntry::make('slug'),
+                TextEntry::make('name')
+                    ->label('Nom'),
+                TextEntry::make('slug')
+                    ->label('Slug'),
                 TextEntry::make('date')
-                    ->date(),
-                TextEntry::make('series'),
-                TextEntry::make('city'),
-                ImageEntry::make('image'),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                    ->date()
+                    ->label('Date'),
+                TextEntry::make('series')
+                    ->label('Série'),
+                TextEntry::make('city')
+                    ->label('Ville'),
+                TextEntry::make('camera.name')
+                    ->label('Camera'),
+                ImageEntry::make('image')
+                    ->label('Image')
+                    ->columnSpanFull(),
             ]);
     }
 }

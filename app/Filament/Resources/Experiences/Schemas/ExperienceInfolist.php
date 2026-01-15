@@ -11,21 +11,21 @@ class ExperienceInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('slug'),
+                TextEntry::make('title')
+                    ->label('Titre'),
+                TextEntry::make('slug')
+                    ->label('Slug'),
                 TextEntry::make('description')
+                    ->label('Description')
                     ->columnSpanFull(),
                 TextEntry::make('start_date')
+                    ->label('Date de début')
                     ->date(),
                 TextEntry::make('end_date')
+                    ->label('Date de fin')
                     ->date(),
-                TextEntry::make('type'),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                TextEntry::make('type')
+                    ->label('Type'),
             ]);
     }
 }

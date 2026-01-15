@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
-use App\Models\Stack;
+use App\Enums\Stack;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,30 +17,36 @@ class ProjectForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nom')
                     ->required()
                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                 TextInput::make('slug')
+                    ->label('Slug')
                     ->required(),
                 TextInput::make('description')
+                    ->label('Description')
                     ->required(),
-
                 Select::make('stack')
+                    ->label('Stack')
                     ->required()
-                    ->options(fn () => Stack::all()->pluck('name', 'id'))
+                    ->options(Stack::class)
                     ->multiple()
                     ->preload()
                     ->searchable(),
                 FileUpload::make('image')
+                    ->label('Image')
+                    ->disk('scaleway')
+                    ->directory('project')
                     ->image()
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('url')
-                    ->url()
+                    ->label('Url')
                     ->prefix('https://'),
                 TextInput::make('url_github')
+                    ->label('Url GitHub')
                     ->url()
                     ->prefix('https://'),
-
             ]);
     }
 }

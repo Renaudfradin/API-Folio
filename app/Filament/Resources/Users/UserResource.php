@@ -20,9 +20,24 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $recordTitleAttribute = 'User';
+    protected static ?string $recordTitleAttribute = 'email';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('Utilisateurs');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('Utilisateur');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('Utilisateurs');
+    }
 
     public static function form(Schema $schema): Schema
     {

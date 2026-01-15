@@ -22,9 +22,4 @@ class Project extends Model
     protected $casts = [
         'stack' => 'array',
     ];
-
-    public function stack()
-    {
-        return $this->belongsTo(Stack::class);
-    }
 }

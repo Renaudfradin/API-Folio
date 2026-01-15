@@ -24,6 +24,8 @@ class ExperienceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Experience';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'renaudfradin';
+
     public static function form(Schema $schema): Schema
     {
         return ExperienceForm::configure($schema);

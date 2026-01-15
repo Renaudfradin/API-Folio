@@ -15,17 +15,23 @@ class ExperienceForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Titre')
                     ->required(),
                 TextInput::make('slug')
+                    ->label('Slug')
                     ->required(),
                 Textarea::make('description')
+                    ->label('Description')
                     ->required()
                     ->columnSpanFull(),
                 DatePicker::make('start_date')
+                    ->label('Date de début')
                     ->required(),
                 DatePicker::make('end_date')
+                    ->label('Date de fin')
                     ->required(),
                 Select::make('type')
+                    ->label('Type')
                     ->required()
                     ->options([
                         'stage' => 'Stage',

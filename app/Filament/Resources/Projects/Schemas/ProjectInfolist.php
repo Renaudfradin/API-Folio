@@ -12,22 +12,23 @@ class ProjectInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
-                TextEntry::make('slug'),
-                TextEntry::make('description'),
-                ImageEntry::make('image'),
+                TextEntry::make('name')
+                    ->label('Nom'),
+                TextEntry::make('slug')
+                    ->label('Slug'),
+                TextEntry::make('description')
+                    ->label('Description'),
+                ImageEntry::make('image')
+                    ->label('Image'),
                 TextEntry::make('url')
+                    ->label('Url')
                     ->placeholder('-'),
                 TextEntry::make('url_github')
+                    ->label('Url GitHub')
                     ->placeholder('-'),
                 TextEntry::make('stack')
+                    ->label('Stack')
                     ->numeric(),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
             ]);
     }
 }

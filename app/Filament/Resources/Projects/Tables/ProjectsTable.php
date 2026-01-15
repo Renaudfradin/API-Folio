@@ -18,26 +18,17 @@ class ProjectsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nom')
                     ->searchable(),
-                ImageColumn::make('image'),
+                ImageColumn::make('image')
+                    ->label('Image'),
                 TextColumn::make('url')
-                    ->searchable(),
-                TextColumn::make('url_github')
-                    ->searchable(),
+                    ->label('Url')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('stack')
+                    ->label('Stack')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-
             ])
             ->recordActions([
                 ViewAction::make(),

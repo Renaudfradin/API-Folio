@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Blocks\Schemas;
 
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -13,8 +13,10 @@ class BlockForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Titre')
                     ->required(),
-                Textarea::make('content')
+                RichEditor::make('content')
+                    ->label('Contenu')
                     ->required()
                     ->columnSpanFull(),
             ]);

@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources\Photographies\Tables;
 
+use App\Enums\Serie;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class PhotographiesTable
@@ -17,32 +20,27 @@ class PhotographiesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nom')
+                    ->sortable()
                     ->searchable(),
-                TextColumn::make('slug')
-                    ->searchable(),
-                TextColumn::make('date')
-                    ->date()
-                    ->sortable(),
                 TextColumn::make('series')
+                    ->label('Série')
+                    ->sortable(),
+                ImageColumn::make('image')
+                    ->label('Image'),
+                TextColumn::make('camera.name')
+                    ->label('Caméra')
                     ->searchable(),
-                TextColumn::make('city')
-                    ->searchable(),
-                ImageColumn::make('image'),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('series')
+                    ->options(Serie::class)
+                    ->native(false),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
