@@ -1,47 +1,37 @@
 <?php
 
-namespace App\Filament\Resources\Photographies\Tables;
+namespace App\Filament\Resources\Cameras\Tables;
 
 use App\Enums\Serie;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class PhotographiesTable
+class CamerasTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nom')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('series')
-                    ->label('Série')
+                    ->searchable()
                     ->sortable(),
                 ImageColumn::make('image')
-                    ->label('Image')
                     ->disk('scaleway'),
-                TextColumn::make('camera.name')
-                    ->label('Caméra')
-                    ->searchable(),
+                TextColumn::make('serie')
+                    ->label('Série')
+                    ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('series')
-                    ->options(Serie::class)
-                    ->native(false),
+                SelectFilter::make('serie')
+                    ->options(Serie::class),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
-                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -19,7 +19,8 @@ class ProjectInfolist
                 TextEntry::make('description')
                     ->label('Description'),
                 ImageEntry::make('image')
-                    ->label('Image'),
+                    ->label('Image')
+                    ->disk('scaleway'),
                 TextEntry::make('url')
                     ->label('Url')
                     ->placeholder('-'),

@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\Photographies\Schemas;
 
+use App\Enums\Serie;
+use App\Models\Camera;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
-use App\Models\Camera;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use App\Enums\Serie;
 
 class PhotographyForm
 {

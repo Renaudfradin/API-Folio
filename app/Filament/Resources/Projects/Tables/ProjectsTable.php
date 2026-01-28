@@ -19,9 +19,11 @@ class ProjectsTable
             ->columns([
                 TextColumn::make('name')
                     ->label('Nom')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 ImageColumn::make('image')
-                    ->label('Image'),
+                    ->label('Image')
+                    ->disk('scaleway'),
                 TextColumn::make('url')
                     ->label('Url')
                     ->toggleable(isToggledHiddenByDefault: true),

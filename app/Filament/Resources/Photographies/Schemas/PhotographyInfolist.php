@@ -27,6 +27,7 @@ class PhotographyInfolist
                     ->label('Camera'),
                 ImageEntry::make('image')
                     ->label('Image')
+                    ->disk('scaleway')
                     ->columnSpanFull(),
             ]);
     }

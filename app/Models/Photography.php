@@ -16,7 +16,7 @@ class Photography extends Model
         'date',
         'series',
         'city',
-        'camera_id'
+        'camera_id',
     ];
 
     protected $casts = [

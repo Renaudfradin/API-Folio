@@ -2,19 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Enums\Serie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\camera>
- */
 class CameraFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $name = fake()->unique()->words(asText: true);
@@ -22,6 +15,9 @@ class CameraFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name),
+            'serie' => fake()->randomElement(Serie::cases())->value,
+            'content' => fake()->paragraph(),
+            'image' => 'camera/01KG219B0EBXR1EP86NAXM23MA.jpg',
         ];
     }
 }

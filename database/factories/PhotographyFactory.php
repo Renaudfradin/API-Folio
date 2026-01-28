@@ -2,20 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Enums\Serie;
 use App\Models\Camera;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Photography>
- */
 class PhotographyFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $name = fake()->words(3, true);
@@ -23,11 +16,11 @@ class PhotographyFactory extends Factory
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name . '-' . fake()->unique()->numberBetween(1, 9999)),
+            'slug' => Str::slug($name.'-'.fake()->unique()->numberBetween(1, 9999)),
             'date' => fake()->dateTimeBetween('-2 years', 'now'),
-            'series' => fake()->word(),
+            'series' => fake()->randomElement(Serie::cases())->value,
             'city' => fake()->city(),
-            'image' => fake()->uuid() . '.jpg',
+            'image' => 'photography/01KG22AX9X5CCA36SPY9HFSWHY.jpg',
             'camera_id' => $cameraId,
         ];
     }

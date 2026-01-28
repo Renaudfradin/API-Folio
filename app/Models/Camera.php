@@ -12,6 +12,9 @@ class Camera extends Model
     protected $fillable = [
         'name',
         'slug',
+        'content',
+        'image',
+        'serie',
     ];
 
     public function photographs()
