@@ -1,8 +1,17 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\CameraController;
+use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PhotographyController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/', [HomeController::class, 'index']);
+Route::get('/cameras', [CameraController::class, 'index']);
+Route::get('/camera/{camera:slug}', [CameraController::class, 'show']);
+Route::get('/projects', [ProjectController::class, 'index']);
+Route::get('/project/{project:slug}', [ProjectController::class, 'show']);
+Route::get('/photographies', [PhotographyController::class, 'index']);
+Route::get('/photography/{photography:slug}', [PhotographyController::class, 'show']);
+Route::get('/experiences', [ExperienceController::class, 'index']);

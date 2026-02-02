@@ -2,65 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorecameraRequest;
-use App\Http\Requests\UpdatecameraRequest;
-use App\Models\camera;
+use App\Http\Resources\CameraDetailResource;
+use App\Http\Resources\CameraResource;
+use App\Models\Camera;
+use OpenApi\Annotations as OA;
 
 class CameraController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/cameras",
+     *     summary="Get all cameras",
+     *     tags={"Cameras"},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get all cameras"
+     *     )
+     * )
      */
     public function index()
     {
-        //
+        return CameraResource::collection(Camera::all());
     }
 
     /**
-     * Show the form for creating a new resource.
+     * @OA\Get(
+     *     path="/api/camera/{camera}",
+     *     summary="Get a camera",
+     *     tags={"Cameras"},
+     *
+     *     @OA\Parameter(
+     *         name="camera",
+     *         in="path",
+     *         required=true,
+     *         description="ID of camera to return",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get a camera"
+     *     )
+     * )
      */
-    public function create()
+    public function show(Camera $camera)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorecameraRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(camera $camera)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(camera $camera)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatecameraRequest $request, camera $camera)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(camera $camera)
-    {
-        //
+        return CameraDetailResource::make($camera);
     }
 }

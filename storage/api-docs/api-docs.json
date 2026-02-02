@@ -1,0 +1,220 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Folio",
+        "description": "Documentation de l'API Folio",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/cameras": {
+            "get": {
+                "tags": [
+                    "Cameras"
+                ],
+                "summary": "Get all cameras",
+                "operationId": "a276539e8556682bcbca79854ac5c34e",
+                "responses": {
+                    "200": {
+                        "description": "Get all cameras"
+                    }
+                }
+            }
+        },
+        "/api/camera/{camera}": {
+            "get": {
+                "tags": [
+                    "Cameras"
+                ],
+                "summary": "Get a camera",
+                "operationId": "26ce3e46b19ddffe1c5c471b993949e1",
+                "parameters": [
+                    {
+                        "name": "camera",
+                        "in": "path",
+                        "description": "ID of camera to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a camera"
+                    }
+                }
+            }
+        },
+        "/api/experiences": {
+            "get": {
+                "tags": [
+                    "Experiences"
+                ],
+                "summary": "Get all experiences",
+                "operationId": "9808e2b3304f0b4df63e0b33dc489031",
+                "responses": {
+                    "200": {
+                        "description": "Get all experiences"
+                    }
+                }
+            }
+        },
+        "/api/experience/{experience}": {
+            "get": {
+                "tags": [
+                    "Experiences"
+                ],
+                "summary": "Get an experience",
+                "operationId": "65bf5a30a06ca3a3052a43341d565343",
+                "parameters": [
+                    {
+                        "name": "experience",
+                        "in": "path",
+                        "description": "ID of experience to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get an experience"
+                    }
+                }
+            }
+        },
+        "/api/": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "Get home",
+                "operationId": "f34249f22f751d316311d36e56f78ade",
+                "responses": {
+                    "200": {
+                        "description": "Get home"
+                    }
+                }
+            }
+        },
+        "/api/photographies": {
+            "get": {
+                "tags": [
+                    "Photographies"
+                ],
+                "summary": "Get all photographies",
+                "operationId": "c75c91998d0da198ebef7cc7ec883522",
+                "responses": {
+                    "200": {
+                        "description": "Get all photographies"
+                    }
+                }
+            }
+        },
+        "/api/photography/{photography}": {
+            "get": {
+                "tags": [
+                    "Photographies"
+                ],
+                "summary": "Get a photography",
+                "operationId": "1c0be09615f71ccb4534f934e6a5210c",
+                "parameters": [
+                    {
+                        "name": "photography",
+                        "in": "path",
+                        "description": "ID of photography to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a photography"
+                    }
+                }
+            }
+        },
+        "/api/projects": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get all projects",
+                "operationId": "8d4a13ef3fc773ff4031e515460919ea",
+                "responses": {
+                    "200": {
+                        "description": "Get all projects"
+                    }
+                }
+            }
+        },
+        "/api/project/{project}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get a project",
+                "operationId": "34a0e5f70b8c5e2060a181d44fc807d5",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "description": "ID of project to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a project"
+                    }
+                }
+            }
+        },
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Healthcheck",
+                "operationId": "f403f8ada34150fac8b7615713f0c943",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Cameras",
+            "description": "Cameras"
+        },
+        {
+            "name": "Experiences",
+            "description": "Experiences"
+        },
+        {
+            "name": "Home",
+            "description": "Home"
+        },
+        {
+            "name": "Photographies",
+            "description": "Photographies"
+        },
+        {
+            "name": "Projects",
+            "description": "Projects"
+        },
+        {
+            "name": "Health",
+            "description": "Health"
+        }
+    ]
+}

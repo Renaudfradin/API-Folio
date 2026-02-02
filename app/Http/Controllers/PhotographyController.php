@@ -2,65 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePhotographyRequest;
-use App\Http\Requests\UpdatePhotographyRequest;
+use App\Http\Resources\PhotographyDetailResource;
+use App\Http\Resources\PhotographyResource;
 use App\Models\Photography;
+use OpenApi\Annotations as OA;
 
 class PhotographyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/photographies",
+     *     summary="Get all photographies",
+     *     tags={"Photographies"},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get all photographies"
+     *     )
+     * )
      */
     public function index()
     {
-        //
+        return PhotographyResource::collection(Photography::all());
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePhotographyRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/photography/{photography}",
+     *     summary="Get a photography",
+     *     tags={"Photographies"},
+     *
+     *     @OA\Parameter(
+     *         name="photography",
+     *         in="path",
+     *         required=true,
+     *         description="ID of photography to return",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get a photography"
+     *     )
+     * )
      */
     public function show(Photography $photography)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Photography $photography)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePhotographyRequest $request, Photography $photography)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Photography $photography)
-    {
-        //
+        return PhotographyDetailResource::make($photography);
     }
 }
