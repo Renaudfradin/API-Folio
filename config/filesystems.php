@@ -51,7 +51,7 @@ return [
             'driver' => 's3',
             'key' => env('SCALEWAY_KEY'),
             'secret' => env('SCALEWAY_SECRET'),
-            'region' => 'fr-par',
+            'region' => env('SCALEWAY_REGION'),
             'bucket' => env('SCALEWAY_BUCKET'),
             'url' => env('OBJECT_STORAGE_PUBLIC_URL'),
             'endpoint' => env('SCALEWAY_ENDPOINT', 'https://s3.fr-par.scw.cloud'),

@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationGroup;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -25,11 +26,14 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->spa()
             ->id('admin')
             ->path('admin')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
+                'secondary' => Color::Teal,
+                'tertiary' => Color::Indigo,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -40,6 +44,16 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+            ])
+            ->sidebarCollapsibleOnDesktop()
+            ->maxContentWidth('full')
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label(fn(): string => 'renaudfradin')
+                    ->icon('heroicon-o-newspaper'),
+                NavigationGroup::make()
+                    ->label(fn(): string => 'renaudfradinphoto')
+                    ->icon('heroicon-o-newspaper'),
             ])
             ->middleware([
                 EncryptCookies::class,

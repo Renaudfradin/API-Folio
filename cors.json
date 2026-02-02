@@ -1,22 +1,11 @@
-[
-  {
-    "AllowedOrigins": [
-      "http://localhost:8001",
-      "http://127.0.0.1:8001",
-      "https://ton-domaine-prod.com"
-    ],
-    "AllowedMethods": [
-      "GET",
-      "PUT",
-      "POST",
-      "HEAD"
-    ],
-    "AllowedHeaders": [
-      "*"
-    ],
-    "ExposeHeaders": [
-      "ETag"
-    ],
-    "MaxAgeSeconds": 3000
-  }
-]
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["*"],
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["GET", "HEAD", "POST", "PUT", "DELETE"],
+      "MaxAgeSeconds": 3000,
+      "ExposeHeaders": ["Etag"]
+    }
+  ]
+}

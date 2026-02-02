@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Cameras\Schemas;
 
 use App\Enums\Serie;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -21,7 +21,7 @@ class CameraForm
                 TextInput::make('slug')
                     ->label('Slug')
                     ->required(),
-                RichEditor::make('content')
+                MarkdownEditor::make('content')
                     ->label('Contenu')
                     ->columnSpanFull(),
                 FileUpload::make('image')

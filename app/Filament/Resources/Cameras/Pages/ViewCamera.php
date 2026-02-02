@@ -3,19 +3,17 @@
 namespace App\Filament\Resources\Cameras\Pages;
 
 use App\Filament\Resources\Cameras\CameraResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditCamera extends EditRecord
+class ViewCamera extends ViewRecord
 {
     protected static string $resource = CameraResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

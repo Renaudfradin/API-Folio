@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Blocks\Schemas;
 
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -15,7 +15,7 @@ class BlockForm
                 TextInput::make('title')
                     ->label('Titre')
                     ->required(),
-                RichEditor::make('content')
+                MarkdownEditor::make('content')
                     ->label('Contenu')
                     ->required()
                     ->columnSpanFull(),

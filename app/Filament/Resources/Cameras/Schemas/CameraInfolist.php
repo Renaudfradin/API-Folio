@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Filament\Resources\Cameras\Schemas;
+
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Schema;
+
+class CameraInfolist
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextEntry::make('name')
+                    ->label('Nom'),
+                TextEntry::make('slug')
+                    ->label('Slug'),
+                TextEntry::make('content')
+                    ->label('Content')
+                    ->columnSpanFull(),
+                ImageEntry::make('image')
+                    ->label('Image')
+                    ->disk('scaleway'),
+                TextEntry::make('serie')
+                    ->label('Serie'),
+            ]);
+    }
+}
