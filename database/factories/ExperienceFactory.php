@@ -16,6 +16,7 @@ class ExperienceFactory extends Factory
         return [
             'title' => $title,
             'slug' => Str::slug($title.'-'.fake()->unique()->numberBetween(1, 9999)),
+            'company' => fake()->company(),
             'description' => fake()->paragraphs(3, true),
             'start_date' => $startDate,
             'end_date' => $endDate,

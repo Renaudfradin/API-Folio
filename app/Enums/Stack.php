@@ -6,6 +6,7 @@ enum Stack: string
 {
     case Laravel = 'laravel';
     case Nuxt = 'nuxt';
+    case Next = 'next';
     case React = 'react';
     case Vue = 'vue';
     case Symfony = 'symfony';

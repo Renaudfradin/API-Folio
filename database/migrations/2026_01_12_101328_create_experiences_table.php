@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug');
+            $table->string('company');
             $table->text('description');
             $table->date('start_date');
             $table->date('end_date');

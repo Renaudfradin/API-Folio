@@ -38,6 +38,8 @@ class ExperienceForm
                         'alternance' => 'Alternance',
                         'cdi' => 'CDI',
                     ]),
+                TextInput::make('company')
+                    ->label('Entreprise'),
             ]);
     }
 }

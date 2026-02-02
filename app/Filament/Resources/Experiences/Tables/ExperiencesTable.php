@@ -21,8 +21,8 @@ class ExperiencesTable
                     ->label('Titre')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('slug')
-                    ->label('Slug')
+                TextColumn::make('company')
+                    ->label('Entreprise')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('type')

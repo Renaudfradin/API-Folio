@@ -26,6 +26,8 @@ class ExperienceInfolist
                     ->date(),
                 TextEntry::make('type')
                     ->label('Type'),
+                TextEntry::make('company')
+                    ->label('Entreprise'),
             ]);
     }
 }
