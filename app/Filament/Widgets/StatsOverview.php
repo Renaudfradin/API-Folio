@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Filament\Widgets;
+
+use App\Models\Camera;
+use App\Models\Experience;
+use App\Models\Photography;
+use App\Models\Project;
+use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+
+class StatsOverview extends StatsOverviewWidget
+{
+    protected function getStats(): array
+    {
+        return [
+            Stat::make('Total Camera', Camera::count()),
+            Stat::make('Total Photography', Photography::count()),
+            Stat::make('Total Project', Project::count()),
+            Stat::make('Total Experience', Experience::count()),
+        ];
+    }
+}

@@ -12,6 +12,14 @@ It centralizes data management and essential functionalities.
 L’API constitue le back-office de mes sites.
 Elle centralise la gestion des données et les fonctionnalités essentielles.
 
+### View
+
+<p>API et BackOffice pour AtthStudio</p>
+
+![home](public/img/home1.png)
+![article](public/img/home2.png)
+![article](public/img/home3.png)
+
 ### 🛠 Installation & Set Up
 
 1. Install dependencies
