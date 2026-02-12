@@ -15,10 +15,10 @@ class PhotographyResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'image' => Storage::disk('scaleway')->url($this->image),
-            'date' => $this->date,
+            'date' => $this->date?->toDateString(),
             'series' => $this->series,
             'city' => $this->city,
-            'camera_id' => $this->camera_id,
+            'camera_name' => $this->camera->name,
         ];
     }
 }
