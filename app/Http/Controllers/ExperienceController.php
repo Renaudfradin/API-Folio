@@ -35,9 +35,10 @@ class ExperienceController extends Controller
      *         name="experience",
      *         in="path",
      *         required=true,
-     *         description="ID of experience to return",
+     *         description="Slug of experience to return",
+     *
      *         @OA\Schema(
-     *             type="integer"
+     *             type="string"
      *         )
      *     ),
      *

@@ -36,9 +36,10 @@ class PhotographyController extends Controller
      *         name="photography",
      *         in="path",
      *         required=true,
-     *         description="ID of photography to return",
+     *         description="Slug of photography to return",
+     *
      *         @OA\Schema(
-     *             type="integer"
+     *             type="string"
      *         )
      *     ),
      *

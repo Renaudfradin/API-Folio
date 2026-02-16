@@ -9,6 +9,7 @@ use OpenApi\Annotations as OA;
  *     path="/api/health",
  *     summary="Healthcheck",
  *     tags={"Health"},
+ *
  *     @OA\Response(
  *         response=200,
  *         description="OK"

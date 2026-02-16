@@ -36,9 +36,10 @@ class ProjectController extends Controller
      *         name="project",
      *         in="path",
      *         required=true,
-     *         description="ID of project to return",
+     *         description="Slug of project to return",
+     *
      *         @OA\Schema(
-     *             type="integer"
+     *             type="string"
      *         )
      *     ),
      *
