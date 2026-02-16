@@ -36,9 +36,10 @@ class CameraController extends Controller
      *         name="camera",
      *         in="path",
      *         required=true,
-     *         description="ID of camera to return",
+     *         description="Slug of camera to return",
+     *
      *         @OA\Schema(
-     *             type="integer"
+     *             type="string"
      *         )
      *     ),
      *

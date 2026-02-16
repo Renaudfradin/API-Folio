@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,9 +12,7 @@ class AppServiceProvider extends ServiceProvider
         // Force HTTPS en production
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
+            $this->app['request']->server->set('HTTPS', 'on');
         }
-
-        // Trust Railway proxies
-        $this->app['request']->server->set('HTTPS', 'on');
     }
 }

@@ -14,7 +14,7 @@ Elle centralise la gestion des données et les fonctionnalités essentielles.
 
 ### View
 
-<p>API et BackOffice pour AtthStudio</p>
+<p>API et BackOffice pour Api-Folio</p>
 
 ![home](public/img/home1.png)
 ![article](public/img/home2.png)

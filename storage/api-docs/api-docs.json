@@ -3,7 +3,7 @@
     "info": {
         "title": "API Folio",
         "description": "Documentation de l'API Folio",
-        "version": "1.0.0"
+        "version": "1.1.0"
     },
     "paths": {
         "/api/cameras": {
@@ -31,10 +31,10 @@
                     {
                         "name": "camera",
                         "in": "path",
-                        "description": "ID of camera to return",
+                        "description": "Slug of camera to return",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -70,10 +70,10 @@
                     {
                         "name": "experience",
                         "in": "path",
-                        "description": "ID of experience to return",
+                        "description": "Slug of experience to return",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -123,10 +123,10 @@
                     {
                         "name": "photography",
                         "in": "path",
-                        "description": "ID of photography to return",
+                        "description": "Slug of photography to return",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
@@ -162,10 +162,10 @@
                     {
                         "name": "project",
                         "in": "path",
-                        "description": "ID of project to return",
+                        "description": "Slug of project to return",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     }
                 ],
