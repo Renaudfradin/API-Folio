@@ -1,2 +1,5 @@
+[phases.setup]
+nixPkgs = ['nodejs_22']
+
 [start]
 cmd = 'php -d upload_max_filesize=120M -d post_max_size=120M -d memory_limit=512M artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
