@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Employments\Schemas;
 
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -20,7 +21,8 @@ class EmploymentInfolist
                 TextEntry::make('link_job')
                     ->url(fn ($record) => $record->link_job)
                     ->openUrlInNewTab(),
-                TextEntry::make('responce'),
+                IconEntry::make('responce')
+                    ->boolean(),
                 TextEntry::make('response_date')
                     ->date(),
                 TextEntry::make('notes')
