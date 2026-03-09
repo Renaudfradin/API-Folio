@@ -1,5 +1,8 @@
 [phases.setup]
-nixPkgs = ['nodejs_22']
+nixPkgs = ['nodejs_22', 'php', 'php82Packages.composer']
+
+[phases.build]
+cmds = ['composer install --ignore-platform-reqs --no-dev --optimize-autoloader']
 
 [start]
 cmd = 'php -d upload_max_filesize=120M -d post_max_size=120M -d memory_limit=512M artisan serve --host=0.0.0.0 --port=${PORT:-8000}'
