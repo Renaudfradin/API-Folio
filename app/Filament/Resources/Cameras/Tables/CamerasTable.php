@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Cameras\Tables;
 
 use App\Enums\Serie;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\ImageColumn;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -20,8 +22,6 @@ class CamerasTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                ImageColumn::make('image')
-                    ->disk('scaleway'),
                 TextColumn::make('serie')
                     ->label('Série')
                     ->sortable(),
@@ -31,7 +31,11 @@ class CamerasTable
                     ->options(Serie::class),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

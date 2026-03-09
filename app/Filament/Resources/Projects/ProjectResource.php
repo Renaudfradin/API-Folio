@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects;
 
+use App\Filament\Resources\Documents\RelationManagers\DocumentableRelationManager;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
@@ -39,6 +40,13 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return ProjectsTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            DocumentableRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

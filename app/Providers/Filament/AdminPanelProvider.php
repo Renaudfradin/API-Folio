@@ -52,6 +52,12 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label(fn (): string => 'renaudfradinphoto')
                     ->icon('heroicon-o-newspaper'),
+                NavigationGroup::make()
+                    ->label(fn (): string => 'Employments')
+                    ->icon('heroicon-o-briefcase'),
+                NavigationGroup::make()
+                    ->label(fn (): string => 'Options')
+                    ->icon('heroicon-o-cog-6-tooth'),
             ])
             ->middleware([
                 EncryptCookies::class,

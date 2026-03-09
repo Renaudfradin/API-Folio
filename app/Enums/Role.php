@@ -7,4 +7,5 @@ enum Role: string
     case Admin = 'admin';
     case User = 'user';
     case Demo = 'demo';
+    case Platform = 'platform';
 }

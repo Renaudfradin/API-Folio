@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Cameras\Schemas;
 
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -19,9 +18,6 @@ class CameraInfolist
                 TextEntry::make('content')
                     ->label('Content')
                     ->columnSpanFull(),
-                ImageEntry::make('image')
-                    ->label('Image')
-                    ->disk('scaleway'),
                 TextEntry::make('serie')
                     ->label('Serie'),
             ]);

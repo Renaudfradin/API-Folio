@@ -15,7 +15,7 @@ class CameraDetailResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'content' => $this->content,
-            'image' => Storage::disk('scaleway')->url($this->image),
+            'image' => Storage::disk('scaleway')->url($this->documents->first()->image ?? null),
             'serie' => $this->serie,
         ];
     }

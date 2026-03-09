@@ -27,4 +27,9 @@ class Photography extends Model
     {
         return $this->belongsTo(Camera::class);
     }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 }

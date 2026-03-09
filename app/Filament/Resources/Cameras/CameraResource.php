@@ -9,6 +9,7 @@ use App\Filament\Resources\Cameras\Pages\ViewCamera;
 use App\Filament\Resources\Cameras\Schemas\CameraForm;
 use App\Filament\Resources\Cameras\Schemas\CameraInfolist;
 use App\Filament\Resources\Cameras\Tables\CamerasTable;
+use App\Filament\Resources\Documents\RelationManagers\DocumentableRelationManager;
 use App\Models\Camera;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -39,6 +40,13 @@ class CameraResource extends Resource
     public static function table(Table $table): Table
     {
         return CamerasTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            DocumentableRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

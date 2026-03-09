@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\Stack;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Set;
@@ -33,13 +32,6 @@ class ProjectForm
                     ->multiple()
                     ->preload()
                     ->searchable(),
-                FileUpload::make('image')
-                    ->label('Image')
-                    ->disk('scaleway')
-                    ->directory('project')
-                    ->image()
-                    ->required()
-                    ->columnSpanFull(),
                 TextInput::make('url')
                     ->label('Url')
                     ->prefix('https://'),
