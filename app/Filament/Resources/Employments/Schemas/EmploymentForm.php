@@ -5,8 +5,8 @@ namespace App\Filament\Resources\Employments\Schemas;
 use App\Enums\Platform;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class EmploymentForm

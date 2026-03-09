@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\Employments\Tables;
 
 use App\Enums\Platform;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ActionGroup;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -38,6 +38,8 @@ class EmploymentsTable
             ->filters([
                 SelectFilter::make('platform')
                     ->options(Platform::class),
+                SelectFilter::make('responce')
+                    ->options([true => 'Oui', false => 'Non']),
             ])
             ->recordActions([
                 ActionGroup::make([

@@ -15,7 +15,7 @@ class ProjectResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            'image' => Storage::disk('scaleway')->url($this->image),
+            'image' => Storage::disk('scaleway')->url($this->documents->first()->image ?? null),
             'url' => $this->url,
             'url_github' => $this->url_github,
             'stack' => $this->stack,

@@ -9,11 +9,12 @@ class Project extends Model
 {
     use HasFactory;
 
+    public const MORPH_TYPE = 'Project';
+
     protected $fillable = [
         'name',
         'slug',
         'description',
-        'image',
         'url',
         'url_github',
         'stack',
@@ -22,4 +23,9 @@ class Project extends Model
     protected $casts = [
         'stack' => 'array',
     ];
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 }

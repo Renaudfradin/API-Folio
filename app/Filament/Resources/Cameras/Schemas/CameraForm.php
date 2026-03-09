@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Cameras\Schemas;
 
 use App\Enums\Serie;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,12 +22,6 @@ class CameraForm
                     ->required(),
                 MarkdownEditor::make('content')
                     ->label('Contenu')
-                    ->columnSpanFull(),
-                FileUpload::make('image')
-                    ->label('Image')
-                    ->disk('scaleway')
-                    ->directory('camera')
-                    ->image()
                     ->columnSpanFull(),
                 Select::make('serie')
                     ->label('Série')

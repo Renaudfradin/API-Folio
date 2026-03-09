@@ -15,7 +15,9 @@ class ProjectDetailResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            'image' => Storage::disk('scaleway')->url($this->image),
+            'image' => $this->documents->map(function ($document) {
+                return Storage::disk('scaleway')->url($document->image);
+            }),
             'url' => $this->url,
             'url_github' => $this->url_github,
             'stack' => $this->stack,

@@ -9,12 +9,12 @@ use App\Filament\Resources\Employments\Pages\ViewEmployment;
 use App\Filament\Resources\Employments\Schemas\EmploymentForm;
 use App\Filament\Resources\Employments\Schemas\EmploymentInfolist;
 use App\Filament\Resources\Employments\Tables\EmploymentsTable;
+use App\Models\Employment;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Models\Employment;
 
 class EmploymentResource extends Resource
 {

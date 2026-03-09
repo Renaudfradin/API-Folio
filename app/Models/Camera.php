@@ -9,16 +9,22 @@ class Camera extends Model
 {
     use HasFactory;
 
+    public const MORPH_TYPE = 'Camera';
+
     protected $fillable = [
         'name',
         'slug',
         'content',
-        'image',
         'serie',
     ];
 
     public function photographs()
     {
         return $this->hasMany(Photography::class);
+    }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

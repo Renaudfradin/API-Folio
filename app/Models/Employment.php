@@ -20,10 +20,9 @@ class Employment extends Model
         'response_date',
         'notes',
     ];
-    
+
     protected $casts = [
         'date' => 'datetime',
         'response_date' => 'datetime',
     ];
 }
-

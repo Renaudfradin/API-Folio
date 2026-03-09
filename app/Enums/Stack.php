@@ -14,4 +14,6 @@ enum Stack: string
     case Node = 'node';
     case Python = 'python';
     case PHP = 'php';
+    case Other = 'other';
+    case ThreeJS = 'three.js';
 }

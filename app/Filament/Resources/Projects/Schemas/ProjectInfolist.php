@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -18,9 +17,6 @@ class ProjectInfolist
                     ->label('Slug'),
                 TextEntry::make('description')
                     ->label('Description'),
-                ImageEntry::make('image')
-                    ->label('Image')
-                    ->disk('scaleway'),
                 TextEntry::make('url')
                     ->label('Url')
                     ->placeholder('-'),
