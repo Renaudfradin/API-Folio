@@ -43,7 +43,13 @@ composer install
 ./vendor/bin/sail up
 ```
 
-4. Access the API
+4. Run tests
+
+```sh
+./vendor/bin/pest
+```
+
+5. Access the API
 
 ```
 http://127.0.0.1:8001
