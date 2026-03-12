@@ -9,6 +9,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -30,6 +31,9 @@ class ExperiencesTable
                     ->label('Type')
                     ->sortable()
                     ->searchable(),
+                IconColumn::make('active')
+                    ->label('Actif')
+                    ->boolean(),
             ])
             ->filters([
                 SelectFilter::make('type')
@@ -37,6 +41,12 @@ class ExperiencesTable
                         'stage' => 'Stage',
                         'alternance' => 'Alternance',
                         'cdi' => 'CDI',
+                    ]),
+
+                SelectFilter::make('active')
+                    ->options([
+                        1 => 'Actif',
+                        0 => 'Inactif',
                     ]),
             ])
             ->recordActions([

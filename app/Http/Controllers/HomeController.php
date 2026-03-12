@@ -21,7 +21,7 @@ class HomeController extends Controller
     public function index()
     {
         return response()->json([
-            'message' => 'Hello World',
+            'message' => 'Hello World, welcome to the API',
         ]);
     }
 }

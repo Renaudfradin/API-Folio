@@ -6,6 +6,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class ExperienceForm
@@ -40,6 +41,11 @@ class ExperienceForm
                     ]),
                 TextInput::make('company')
                     ->label('Entreprise'),
+                Toggle::make('active')
+                    ->label('Actif')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->inline(false),
             ]);
     }
 }

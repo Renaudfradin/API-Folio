@@ -16,6 +16,7 @@ class Camera extends Model
         'slug',
         'content',
         'serie',
+        'active',
     ];
 
     public function photographs()
@@ -26,5 +27,10 @@ class Camera extends Model
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
     }
 }

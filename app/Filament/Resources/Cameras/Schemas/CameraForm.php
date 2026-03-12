@@ -6,6 +6,7 @@ use App\Enums\Serie;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class CameraForm
@@ -26,6 +27,11 @@ class CameraForm
                 Select::make('serie')
                     ->label('Série')
                     ->options(Serie::class),
+                Toggle::make('active')
+                    ->label('Actif')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->inline(false),
             ]);
     }
 }

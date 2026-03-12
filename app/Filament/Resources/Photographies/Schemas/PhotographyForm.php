@@ -8,6 +8,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class PhotographyForm
@@ -44,6 +45,11 @@ class PhotographyForm
                     ->image()
                     ->required()
                     ->columnSpanFull(),
+                Toggle::make('active')
+                    ->label('Actif')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->inline(false),
             ]);
     }
 }

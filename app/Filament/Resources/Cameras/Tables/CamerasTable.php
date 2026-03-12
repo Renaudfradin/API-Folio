@@ -9,8 +9,10 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\ToggleFilter;
 use Filament\Tables\Table;
 
 class CamerasTable
@@ -25,10 +27,18 @@ class CamerasTable
                 TextColumn::make('serie')
                     ->label('Série')
                     ->sortable(),
+                IconColumn::make('active')
+                    ->label('Actif')
+                    ->boolean(),
             ])
             ->filters([
                 SelectFilter::make('serie')
                     ->options(Serie::class),
+                SelectFilter::make('active')
+                    ->options([
+                        1 => 'Actif',
+                        0 => 'Inactif',
+                    ]),
             ])
             ->recordActions([
                 ActionGroup::make([
