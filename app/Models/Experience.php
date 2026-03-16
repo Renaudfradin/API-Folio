@@ -17,10 +17,16 @@ class Experience extends Model
         'start_date',
         'end_date',
         'type',
+        'active',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
 }

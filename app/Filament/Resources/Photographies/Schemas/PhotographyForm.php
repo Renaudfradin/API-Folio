@@ -8,7 +8,10 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class PhotographyForm
 {
@@ -18,6 +21,8 @@ class PhotographyForm
             ->components([
                 TextInput::make('name')
                     ->label('Nom')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->required(),
                 TextInput::make('slug')
                     ->label('Slug')
@@ -44,6 +49,11 @@ class PhotographyForm
                     ->image()
                     ->required()
                     ->columnSpanFull(),
+                Toggle::make('active')
+                    ->label('Actif')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->inline(false),
             ]);
     }
 }

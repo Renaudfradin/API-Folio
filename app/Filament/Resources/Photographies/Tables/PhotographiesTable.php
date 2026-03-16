@@ -9,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -33,11 +34,18 @@ class PhotographiesTable
                 TextColumn::make('camera.name')
                     ->label('Caméra')
                     ->searchable(),
+                IconColumn::make('active')
+                    ->label('Actif')
+                    ->boolean(),
             ])
             ->filters([
                 SelectFilter::make('series')
-                    ->options(Serie::class)
-                    ->native(false),
+                    ->options(Serie::class),
+                SelectFilter::make('active')
+                    ->options([
+                        1 => 'Actif',
+                        0 => 'Inactif',
+                    ]),
             ])
             ->recordActions([
                 ActionGroup::make([

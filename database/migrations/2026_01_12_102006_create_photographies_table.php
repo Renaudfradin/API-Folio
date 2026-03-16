@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('city');
             $table->string('image');
             $table->string('camera_id');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

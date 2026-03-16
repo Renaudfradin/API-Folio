@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Cameras\Schemas;
 
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -20,6 +21,9 @@ class CameraInfolist
                     ->columnSpanFull(),
                 TextEntry::make('serie')
                     ->label('Serie'),
+                IconEntry::make('active')
+                    ->label('Actif')
+                    ->boolean(),
             ]);
     }
 }

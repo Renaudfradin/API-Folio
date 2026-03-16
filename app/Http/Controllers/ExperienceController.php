@@ -11,18 +11,18 @@ class ExperienceController extends Controller
     /**
      * @OA\Get(
      *     path="/api/experiences",
-     *     summary="Get all experiences",
+     *     summary="Get active experiences",
      *     tags={"Experiences"},
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Get all experiences"
+     *         description="Get active experiences"
      *     )
      * )
      */
     public function index()
     {
-        return ExperienceResource::collection(Experience::all());
+        return ExperienceResource::collection(Experience::active()->get());
     }
 
     /**

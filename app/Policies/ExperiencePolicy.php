@@ -4,9 +4,12 @@ namespace App\Policies;
 
 use App\Models\Experience;
 use App\Models\User;
+use App\Traits\HasRoleBasedVisibility;
 
 class ExperiencePolicy
 {
+    use HasRoleBasedVisibility;
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -19,26 +22,26 @@ class ExperiencePolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function update(User $user, Experience $experience): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function delete(User $user, Experience $experience): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function restore(User $user, Experience $experience): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function forceDelete(User $user, Experience $experience): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 }

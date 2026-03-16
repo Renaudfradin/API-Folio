@@ -12,18 +12,18 @@ class PhotographyController extends Controller
     /**
      * @OA\Get(
      *     path="/api/photographies",
-     *     summary="Get all photographies",
+     *     summary="Get active photographies",
      *     tags={"Photographies"},
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Get all photographies"
+     *         description="Get active photographies"
      *     )
      * )
      */
     public function index()
     {
-        return PhotographyResource::collection(Photography::all());
+        return PhotographyResource::collection(Photography::active()->get());
     }
 
     /**

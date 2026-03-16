@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Experiences\Schemas;
 
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -28,6 +29,9 @@ class ExperienceInfolist
                     ->label('Type'),
                 TextEntry::make('company')
                     ->label('Entreprise'),
+                IconEntry::make('active')
+                    ->label('Actif')
+                    ->boolean(),
             ]);
     }
 }

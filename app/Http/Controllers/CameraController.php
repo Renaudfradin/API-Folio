@@ -12,18 +12,18 @@ class CameraController extends Controller
     /**
      * @OA\Get(
      *     path="/api/cameras",
-     *     summary="Get all cameras",
+     *     summary="Get active cameras",
      *     tags={"Cameras"},
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Get all cameras"
+     *         description="Get active cameras"
      *     )
      * )
      */
     public function index()
     {
-        return CameraResource::collection(Camera::all());
+        return CameraResource::collection(Camera::active()->get());
     }
 
     /**

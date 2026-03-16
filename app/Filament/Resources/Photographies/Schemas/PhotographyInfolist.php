@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Photographies\Schemas;
 
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
@@ -29,6 +30,9 @@ class PhotographyInfolist
                     ->label('Image')
                     ->disk('scaleway')
                     ->columnSpanFull(),
+                IconEntry::make('active')
+                    ->label('Actif')
+                    ->boolean(),
             ]);
     }
 }

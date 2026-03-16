@@ -23,6 +23,7 @@ class UserInfolist
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->placeholder('-'),
+                TextEntry::make('role'),
             ]);
     }
 }

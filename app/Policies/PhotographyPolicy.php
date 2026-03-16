@@ -4,9 +4,12 @@ namespace App\Policies;
 
 use App\Models\Photography;
 use App\Models\User;
+use App\Traits\HasRoleBasedVisibility;
 
 class PhotographyPolicy
 {
+    use HasRoleBasedVisibility;
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -19,26 +22,26 @@ class PhotographyPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function update(User $user, Photography $photography): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function delete(User $user, Photography $photography): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function restore(User $user, Photography $photography): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function forceDelete(User $user, Photography $photography): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 }

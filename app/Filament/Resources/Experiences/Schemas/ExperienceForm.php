@@ -6,7 +6,10 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class ExperienceForm
 {
@@ -16,6 +19,8 @@ class ExperienceForm
             ->components([
                 TextInput::make('title')
                     ->label('Titre')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->required(),
                 TextInput::make('slug')
                     ->label('Slug')
@@ -40,6 +45,11 @@ class ExperienceForm
                     ]),
                 TextInput::make('company')
                     ->label('Entreprise'),
+                Toggle::make('active')
+                    ->label('Actif')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->inline(false),
             ]);
     }
 }

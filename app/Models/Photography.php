@@ -17,6 +17,7 @@ class Photography extends Model
         'series',
         'city',
         'camera_id',
+        'active',
     ];
 
     protected $casts = [
@@ -31,5 +32,10 @@ class Photography extends Model
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
     }
 }

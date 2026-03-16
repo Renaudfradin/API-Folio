@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('content')->nullable();
             $table->string('image')->nullable();
             $table->string('serie')->nullable();
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

@@ -12,18 +12,18 @@ class ProjectController extends Controller
     /**
      * @OA\Get(
      *     path="/api/projects",
-     *     summary="Get all projects",
+     *     summary="Get active projects",
      *     tags={"Projects"},
      *
      *     @OA\Response(
      *         response=200,
-     *         description="Get all projects"
+     *         description="Get active projects"
      *     )
      * )
      */
     public function index()
     {
-        return ProjectResource::collection(Project::all());
+        return ProjectResource::collection(Project::active()->get());
     }
 
     /**

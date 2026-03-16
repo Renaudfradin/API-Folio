@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('url')->nullable();
             $table->string('url_github')->nullable();
             $table->json('stack');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

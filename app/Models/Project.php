@@ -18,6 +18,7 @@ class Project extends Model
         'url',
         'url_github',
         'stack',
+        'active',
     ];
 
     protected $casts = [
@@ -27,5 +28,10 @@ class Project extends Model
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
     }
 }

@@ -10,15 +10,23 @@ use App\Filament\Resources\Users\Schemas\UserForm;
 use App\Filament\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Resources\Users\Tables\UsersTable;
 use App\Models\User;
+use App\Traits\HasRoleBasedVisibility;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class UserResource extends Resource
 {
+    use HasRoleBasedVisibility;
+
     protected static ?string $model = User::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+
+    public static function canViewAny(): bool
+    {
+        return self::isCurrentUserAdmin();
+    }
 
     protected static ?string $recordTitleAttribute = 'email';
 
