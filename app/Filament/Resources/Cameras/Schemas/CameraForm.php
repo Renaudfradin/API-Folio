@@ -7,7 +7,9 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class CameraForm
 {
@@ -17,6 +19,8 @@ class CameraForm
             ->components([
                 TextInput::make('name')
                     ->label('Nom')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                     ->required(),
                 TextInput::make('slug')
                     ->label('Slug')

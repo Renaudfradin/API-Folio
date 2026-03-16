@@ -13,7 +13,7 @@ class SerieTest extends TestCase
         $actualSeries = Serie::cases();
 
         $this->assertCount(count($expectedSeries), $actualSeries);
-        
+
         foreach ($expectedSeries as $index => $expected) {
             $this->assertEquals($expected, $actualSeries[$index]->name);
         }
@@ -42,8 +42,8 @@ class SerieTest extends TestCase
 
     public function test_serie_enum_get_all_values()
     {
-        $series = array_map(fn($case) => $case->value, Serie::cases());
-        
+        $series = array_map(fn ($case) => $case->value, Serie::cases());
+
         $this->assertIsArray($series);
         $this->assertContains(110, $series);
         $this->assertContains(35, $series);

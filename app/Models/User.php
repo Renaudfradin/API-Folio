@@ -17,6 +17,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -35,5 +36,25 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isDemo(): bool
+    {
+        return $this->role === 'demo';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    public function isPlatform(): bool
+    {
+        return $this->role === 'platform';
     }
 }

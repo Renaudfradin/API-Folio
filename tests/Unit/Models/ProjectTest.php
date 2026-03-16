@@ -32,13 +32,13 @@ it('defines active scope method', function () {
 });
 
 it('has correct stack casting', function () {
-    $project = new Project();
+    $project = new Project;
 
     expect($project->getCasts())->toHaveKey('stack', 'array');
 });
 
 it('has correct fillable fields', function () {
-    $project = new Project();
+    $project = new Project;
 
     $expectedFillable = [
         'name',

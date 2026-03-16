@@ -18,8 +18,9 @@ class ProjectForm
             ->components([
                 TextInput::make('name')
                     ->label('Nom')
-                    ->required()
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->required(),
                 TextInput::make('slug')
                     ->label('Slug')
                     ->required(),

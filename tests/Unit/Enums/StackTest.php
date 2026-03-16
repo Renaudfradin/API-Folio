@@ -10,13 +10,13 @@ class StackTest extends TestCase
     public function test_stack_enum_has_expected_values()
     {
         $expectedStacks = [
-            'Laravel', 'Nuxt', 'Next', 'React', 'Vue', 
-            'Symfony', 'Wordpress', 'Node', 'Python', 'PHP', 'Other', 'ThreeJS'
+            'Laravel', 'Nuxt', 'Next', 'React', 'Vue',
+            'Symfony', 'Wordpress', 'Node', 'Python', 'PHP', 'Other', 'ThreeJS',
         ];
         $actualStacks = Stack::cases();
 
         $this->assertCount(count($expectedStacks), $actualStacks);
-        
+
         foreach ($expectedStacks as $index => $expected) {
             $this->assertEquals($expected, $actualStacks[$index]->name);
         }
@@ -53,8 +53,8 @@ class StackTest extends TestCase
 
     public function test_stack_enum_get_all_values()
     {
-        $stacks = array_map(fn($case) => $case->value, Stack::cases());
-        
+        $stacks = array_map(fn ($case) => $case->value, Stack::cases());
+
         $this->assertIsArray($stacks);
         $this->assertContains('laravel', $stacks);
         $this->assertContains('react', $stacks);

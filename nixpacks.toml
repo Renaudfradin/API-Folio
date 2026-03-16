@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['nodejs_22', 'php84', 'php84Packages.composer']
+nixPkgs = ['nodejs_22', 'php85', 'php85Packages.composer']
 
 [phases.build]
 cmds = ['composer install --ignore-platform-reqs --no-dev --optimize-autoloader']

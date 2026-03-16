@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cameras', function (Blueprint $table) {
+        Schema::create('failed_import_rows', function (Blueprint $table): void {
             $table->id();
-            $table->string('name');
-            $table->string('slug');
-            $table->text('content')->nullable();
-            $table->string('image')->nullable();
-            $table->string('serie')->nullable();
-            $table->boolean('active')->default(false);
+            $table->json('data');
+            $table->foreignId('import_id')->constrained()->cascadeOnDelete();
+            $table->text('validation_error')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cameras');
+        Schema::dropIfExists('failed_import_rows');
     }
 };

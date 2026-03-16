@@ -4,9 +4,12 @@ namespace App\Policies;
 
 use App\Models\Employment;
 use App\Models\User;
+use App\Traits\HasRoleBasedVisibility;
 
 class EmploymentPolicy
 {
+    use HasRoleBasedVisibility;
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -19,26 +22,26 @@ class EmploymentPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function update(User $user, Employment $employment): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function delete(User $user, Employment $employment): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function restore(User $user, Employment $employment): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function forceDelete(User $user, Employment $employment): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 }

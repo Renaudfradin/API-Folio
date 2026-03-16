@@ -7,19 +7,19 @@ it('defines active scope method', function () {
 });
 
 it('has correct date casting for start_date', function () {
-    $experience = new Experience();
+    $experience = new Experience;
 
     expect($experience->getCasts())->toHaveKey('start_date', 'datetime');
 });
 
 it('has correct date casting for end_date', function () {
-    $experience = new Experience();
+    $experience = new Experience;
 
     expect($experience->getCasts())->toHaveKey('end_date', 'datetime');
 });
 
 it('has correct fillable fields', function () {
-    $experience = new Experience();
+    $experience = new Experience;
 
     $expectedFillable = [
         'title',

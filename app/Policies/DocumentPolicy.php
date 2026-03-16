@@ -4,9 +4,12 @@ namespace App\Policies;
 
 use App\Models\Document;
 use App\Models\User;
+use App\Traits\HasRoleBasedVisibility;
 
 class DocumentPolicy
 {
+    use HasRoleBasedVisibility;
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -19,26 +22,26 @@ class DocumentPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function update(User $user, Document $document): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function delete(User $user, Document $document): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function restore(User $user, Document $document): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function forceDelete(User $user, Document $document): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 }

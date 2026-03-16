@@ -13,7 +13,7 @@ class RoleTest extends TestCase
         $actualRoles = Role::cases();
 
         $this->assertCount(count($expectedRoles), $actualRoles);
-        
+
         foreach ($expectedRoles as $index => $expected) {
             $this->assertEquals($expected, $actualRoles[$index]->name);
         }
@@ -42,8 +42,8 @@ class RoleTest extends TestCase
 
     public function test_role_enum_get_all_values()
     {
-        $roles = array_map(fn($case) => $case->value, Role::cases());
-        
+        $roles = array_map(fn ($case) => $case->value, Role::cases());
+
         $this->assertIsArray($roles);
         $this->assertContains('admin', $roles);
         $this->assertContains('user', $roles);

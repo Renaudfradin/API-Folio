@@ -15,13 +15,13 @@ it('defines active scope method', function () {
 });
 
 it('has correct date casting', function () {
-    $photography = new Photography();
+    $photography = new Photography;
 
     expect($photography->getCasts())->toHaveKey('date', 'datetime');
 });
 
 it('has correct fillable fields', function () {
-    $photography = new Photography();
+    $photography = new Photography;
 
     $expectedFillable = [
         'name',

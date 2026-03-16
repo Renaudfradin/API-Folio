@@ -18,7 +18,7 @@ class PlatformTest extends TestCase
             'JobupCh',
             'Mail',
             'PoleEmploi',
-            'Other'
+            'Other',
         ];
         $actualPlatforms = Platform::cases();
 
@@ -55,7 +55,7 @@ class PlatformTest extends TestCase
 
     public function test_platform_enum_get_all_values()
     {
-        $platforms = array_map(fn($case) => $case->value, Platform::cases());
+        $platforms = array_map(fn ($case) => $case->value, Platform::cases());
 
         $this->assertIsArray($platforms);
         $this->assertContains('welcometothejungle', $platforms);
