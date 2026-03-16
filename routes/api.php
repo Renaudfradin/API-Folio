@@ -8,6 +8,13 @@ use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now()->toISOString(),
+        'database' => \Illuminate\Support\Facades\DB::connection('pgsql')->getPdo() ? 'connected' : 'disconnected'
+    ]);
+});
 Route::get('/cameras', [CameraController::class, 'index']);
 Route::get('/camera/{camera:slug}', [CameraController::class, 'show']);
 Route::get('/projects', [ProjectController::class, 'index']);
