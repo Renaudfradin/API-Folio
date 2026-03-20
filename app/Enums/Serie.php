@@ -8,4 +8,5 @@ enum Serie: int
     case s35 = 35;
     case s120 = 120;
     case s24 = 24;
+    case sNumerique = 999;
 }
