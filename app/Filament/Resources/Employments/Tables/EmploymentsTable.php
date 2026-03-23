@@ -19,6 +19,7 @@ class EmploymentsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('date', 'desc')
             ->columns([
                 TextColumn::make('company')
                     ->sortable()
@@ -27,7 +28,7 @@ class EmploymentsTable
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('date')
-                    ->date()
+                    ->date('j M Y')
                     ->sortable(),
                 TextColumn::make('platform')
                     ->sortable()
