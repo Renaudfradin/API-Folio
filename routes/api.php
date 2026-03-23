@@ -5,6 +5,7 @@ use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PhotographyController;
 use App\Http\Controllers\ProjectController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
@@ -12,7 +13,7 @@ Route::get('/health', function () {
     return response()->json([
         'status' => 'healthy',
         'timestamp' => now()->toISOString(),
-        'database' => \Illuminate\Support\Facades\DB::connection('pgsql')->getPdo() ? 'connected' : 'disconnected'
+        'database' => DB::connection('pgsql')->getPdo() ? 'connected' : 'disconnected',
     ]);
 });
 Route::get('/cameras', [CameraController::class, 'index']);

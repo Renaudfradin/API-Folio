@@ -58,3 +58,10 @@ http://127.0.0.1:8001
 ### 📚 Documentation
 
 [API Documentation](https://api-folio.up.railway.app/api/documentation)
+
+[BackOffice](https://api-folio.up.railway.app/admin)
+
+[Demo](https://api-folio.up.railway.app/admin)
+
+user: demo@gmail.com
+password: b$K!*g+h4:v6cjaO4SPL/
