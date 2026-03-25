@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 class ResetPostgresSequences extends Command
 {
     protected $signature = 'db:reset-sequences
-                            {--dry-run : Affiche les séquences sans les modifier}';
+                            {--dry-run : Affiche les séquences sans les modifier}
+                            {--force : Force la resynchronisation de toutes les séquences}';
 
     protected $description = 'Resynchronise toutes les séquences PostgreSQL avec le MAX(id) de chaque table';
 
@@ -47,9 +48,14 @@ class ResetPostgresSequences extends Command
         }
 
         $isDryRun = $this->option('dry-run');
+        $isForce = $this->option('force');
 
         if ($isDryRun) {
             $this->warn('Mode dry-run : aucune modification ne sera effectuée.');
+        }
+
+        if ($isForce) {
+            $this->warn('Mode force : toutes les séquences seront resynchronisées.');
         }
 
         $rows = [];
@@ -66,10 +72,13 @@ class ResetPostgresSequences extends Command
             $seqResult = DB::selectOne("SELECT last_value FROM \"{$sequenceName}\"");
             $currentValue = (int) $seqResult->last_value;
 
-            if ($currentValue < $maxId) {
-                $status = 'Desynchronisee';
+            // Si la table est vide, on remet la séquence à 1
+            $targetValue = $maxId > 0 ? $maxId : 1;
+
+            if ($isForce || $currentValue < $maxId) {
+                $status = $isForce ? 'Forcee' : 'Desynchronisee';
                 if (! $isDryRun) {
-                    DB::statement("SELECT setval('\"{$sequenceName}\"', {$maxId})");
+                    DB::statement("SELECT setval('\"{$sequenceName}\"', {$targetValue})");
                     $status = 'Corrigee';
                 }
                 $fixed++;
