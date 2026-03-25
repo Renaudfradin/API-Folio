@@ -31,8 +31,7 @@ class EmploymentsTable
                     ->date('j M Y')
                     ->sortable(),
                 TextColumn::make('platform')
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
                 IconColumn::make('responce')
                     ->boolean(),
             ])
@@ -41,6 +40,7 @@ class EmploymentsTable
                     ->options(Platform::class),
                 SelectFilter::make('responce')
                     ->options([true => 'Oui', false => 'Non']),
+
             ])
             ->recordActions([
                 ActionGroup::make([
