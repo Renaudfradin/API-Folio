@@ -17,7 +17,7 @@ class ResetPostgresSequencesSimple extends Command
     public function handle(): int
     {
         $this->info('Récupération des tables avec séquences (version simplifiée)...');
-        
+
         $isDryRun = $this->option('dry-run');
         $isForce = $this->option('force');
 
@@ -51,17 +51,17 @@ class ResetPostgresSequencesSimple extends Command
 
             foreach ($tables as $table) {
                 $tableName = $table->table_name;
-                
+
                 try {
                     // Récupérer le nom de la séquence
                     $sequenceName = $tableName . '_id_seq';
-                    
+
                     $maxResult = DB::selectOne("SELECT COALESCE(MAX(id), 0) AS max_id FROM \"{$tableName}\"");
                     $maxId = (int) $maxResult->max_id;
 
                     // Vérifier si la séquence existe
                     $seqExists = DB::selectOne("SELECT 1 FROM information_schema.sequences WHERE sequence_name = '{$sequenceName}'");
-                    
+
                     if (!$seqExists) {
                         $this->warn("Séquence {$sequenceName} non trouvée pour la table {$tableName}");
                         continue;
@@ -80,7 +80,9 @@ class ResetPostgresSequencesSimple extends Command
                     if ($isForce || $currentValue < $maxId) {
                         $status = $isForce ? 'Forcee' : 'Desynchronisee';
                         if (! $isDryRun) {
-                            DB::statement("SELECT setval('\"{$sequenceName}\"', {$targetValue}, true)");
+                            // Forcer la resynchronisation avec MAX(id) + 1 pour éviter les conflits
+                            $newValue = $maxId + 1;
+                            DB::statement("SELECT setval('\"{$sequenceName}\"', {$newValue}, true)");
                             $status = 'Corrigee';
                         }
                         $fixed++;
@@ -90,7 +92,6 @@ class ResetPostgresSequencesSimple extends Command
                     }
 
                     $rows[] = [$tableName, $sequenceName, $currentValue, $maxId, $status];
-                    
                 } catch (\Exception $e) {
                     $this->error("Erreur sur la table {$tableName}: " . $e->getMessage());
                     Log::error("ResetPostgresSequencesSimple error", [
@@ -109,14 +110,13 @@ class ResetPostgresSequencesSimple extends Command
             $this->info("{$fixed} sequence(s) corrigee(s), {$skipped} deja synchronisee(s).");
 
             return self::SUCCESS;
-            
         } catch (\Exception $e) {
             $this->error('Erreur générale: ' . $e->getMessage());
             Log::error('ResetPostgresSequencesSimple fatal error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return self::FAILURE;
         }
     }
