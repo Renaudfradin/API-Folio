@@ -9,13 +9,22 @@ class ResetPostgresSequences extends Command
 {
     protected $signature = 'db:reset-sequences
                             {--dry-run : Affiche les séquences sans les modifier}
-                            {--force : Force la resynchronisation de toutes les séquences}';
+                            {--force : Force la resynchronisation de toutes les séquences}
+                            {--debug : Affiche les informations de débogage}';
 
     protected $description = 'Resynchronise toutes les séquences PostgreSQL avec le MAX(id) de chaque table';
 
     public function handle(): int
     {
         $this->info('Récupération des tables avec séquences...');
+
+        $isDebug = $this->option('debug');
+
+        if ($isDebug) {
+            $this->info('Mode debug activé - Affichage des informations de débogage');
+            $this->info('Base de données: ' . DB::connection()->getDatabaseName());
+            $this->info('Driver: ' . DB::connection()->getDriverName());
+        }
 
         // Approche directe : récupère les séquences via pg_sequences + pg_depend
         // pour trouver uniquement les séquences liées à une colonne 'id'
@@ -61,33 +70,46 @@ class ResetPostgresSequences extends Command
         $rows = [];
         $fixed = 0;
         $skipped = 0;
+        $errors = 0;
 
         foreach ($tables as $table) {
             $tableName = $table->table_name;
             $sequenceName = $table->sequence_name;
 
-            $maxResult = DB::selectOne("SELECT COALESCE(MAX(id), 0) AS max_id FROM \"{$tableName}\"");
-            $maxId = (int) $maxResult->max_id;
+            try {
+                $maxResult = DB::selectOne("SELECT COALESCE(MAX(id), 0) AS max_id FROM \"{$tableName}\"");
+                $maxId = (int) $maxResult->max_id;
 
-            $seqResult = DB::selectOne("SELECT last_value FROM \"{$sequenceName}\"");
-            $currentValue = (int) $seqResult->last_value;
+                $seqResult = DB::selectOne("SELECT last_value FROM \"{$sequenceName}\"");
+                $currentValue = (int) $seqResult->last_value;
 
-            // Si la table est vide, on remet la séquence à 1
-            $targetValue = $maxId > 0 ? $maxId : 1;
+                // Si la table est vide, on remet la séquence à 1
+                $targetValue = $maxId > 0 ? $maxId : 1;
 
-            if ($isForce || $currentValue < $maxId) {
-                $status = $isForce ? 'Forcee' : 'Desynchronisee';
-                if (! $isDryRun) {
-                    DB::statement("SELECT setval('\"{$sequenceName}\"', {$targetValue})");
-                    $status = 'Corrigee';
+                if ($isDebug) {
+                    $this->line("Table: {$tableName}, Séquence: {$sequenceName}, Actuel: {$currentValue}, Max: {$maxId}, Cible: {$targetValue}");
                 }
-                $fixed++;
-            } else {
-                $status = 'OK';
-                $skipped++;
-            }
 
-            $rows[] = [$tableName, $sequenceName, $currentValue, $maxId, $status];
+                if ($isForce || $currentValue < $maxId) {
+                    $status = $isForce ? 'Forcee' : 'Desynchronisee';
+                    if (! $isDryRun) {
+                        DB::statement("SELECT setval('\"{$sequenceName}\"', {$targetValue})");
+                        $status = 'Corrigee';
+                    }
+                    $fixed++;
+                } else {
+                    $status = 'OK';
+                    $skipped++;
+                }
+
+                $rows[] = [$tableName, $sequenceName, $currentValue, $maxId, $status];
+            } catch (\Exception $e) {
+                $this->error("Erreur sur la table {$tableName}: " . $e->getMessage());
+                if ($isDebug) {
+                    $this->error("Stack trace: " . $e->getTraceAsString());
+                }
+                $errors++;
+            }
         }
 
         $this->table(
@@ -96,7 +118,11 @@ class ResetPostgresSequences extends Command
         );
 
         $this->newLine();
-        $this->info("{$fixed} sequence(s) corrigee(s), {$skipped} deja synchronisee(s).");
+        $this->info("{$fixed} sequence(s) corrigee(s), {$skipped} deja synchronisee(s), {$errors} erreur(s).");
+
+        if ($errors > 0) {
+            return self::FAILURE;
+        }
 
         return self::SUCCESS;
     }
