@@ -37,7 +37,8 @@ class Deploy extends Command
             'view:clear' => 'Clearing view cache...',
             'cache:clear' => 'Clearing application cache...',
             'migrate' => 'Running database migrations...',
-            'db:reset-sequences --force' => 'Resetting PostgreSQL sequences...',
+            'db:reset-sequences-simple --force' => 'Resetting PostgreSQL sequences (Railway version)...',
+            'storage:link' => 'Creating storage symbolic links...',
         ];
 
         foreach ($commands as $command => $description) {
