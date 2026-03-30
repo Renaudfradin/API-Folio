@@ -47,6 +47,7 @@ class PhotographyForm
                     ->disk('scaleway')
                     ->directory('photography')
                     ->image()
+                    ->maxSize(10240)
                     ->required()
                     ->columnSpanFull(),
                 Toggle::make('active')

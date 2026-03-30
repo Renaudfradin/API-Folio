@@ -24,9 +24,9 @@ class ResetPostgresSequences extends Command
 
         if ($isDebug) {
             $this->info('Mode debug activé - Affichage des informations de débogage');
-            $this->info('Base de données: ' . DB::connection()->getDatabaseName());
-            $this->info('Driver: ' . DB::connection()->getDriverName());
-            $this->info('Mode production: ' . ($isProduction ? 'oui' : 'non'));
+            $this->info('Base de données: '.DB::connection()->getDatabaseName());
+            $this->info('Driver: '.DB::connection()->getDriverName());
+            $this->info('Mode production: '.($isProduction ? 'oui' : 'non'));
         }
 
         if ($isProduction) {
@@ -104,6 +104,7 @@ class ResetPostgresSequences extends Command
                             $this->warn("Séquence introuvable (pg_get_serial_sequence=NULL) pour la table {$tableName}");
                         }
                         $skipped++;
+
                         continue;
                     }
 
@@ -154,9 +155,9 @@ class ResetPostgresSequences extends Command
 
                 $rows[] = [$tableName, $sequenceName, $currentValue, $maxId, $status];
             } catch (\Exception $e) {
-                $this->error("Erreur sur la table {$tableName}: " . $e->getMessage());
+                $this->error("Erreur sur la table {$tableName}: ".$e->getMessage());
                 if ($isDebug) {
-                    $this->error("Stack trace: " . $e->getTraceAsString());
+                    $this->error('Stack trace: '.$e->getTraceAsString());
                 }
                 $errors++;
             }
@@ -179,7 +180,7 @@ class ResetPostgresSequences extends Command
 
     private function quoteQualifiedIdentifier(string $schema, string $name): string
     {
-        return '"' . str_replace('"', '""', $schema) . '"."' . str_replace('"', '""', $name) . '"';
+        return '"'.str_replace('"', '""', $schema).'"."'.str_replace('"', '""', $name).'"';
     }
 
     private function quoteQualifiedIdentifierFromRegclass(string $regclass): string
@@ -190,6 +191,6 @@ class ResetPostgresSequences extends Command
         }
 
         // Fallback (sans schéma) : on quote uniquement le nom.
-        return '"' . str_replace('"', '""', $regclass) . '"';
+        return '"'.str_replace('"', '""', $regclass).'"';
     }
 }

@@ -15,6 +15,7 @@ class DocumentForm
                 FileUpload::make('image')
                     ->disk('scaleway')
                     ->image()
+                    ->maxSize(10240)
                     ->required(),
                 TextInput::make('documentable_id')
                     ->required()

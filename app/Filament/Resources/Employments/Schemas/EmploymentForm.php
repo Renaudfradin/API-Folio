@@ -31,8 +31,9 @@ class EmploymentForm
                     ->required(),
                 Select::make('responce')
                     ->options([
-                        1 => 'Yes',
-                        0 => 'No',
+                        'yes' => 'Oui',
+                        'no' => 'Non',
+                        'pending' => 'En attente',
                     ]),
                 DatePicker::make('response_date'),
                 Textarea::make('notes')
