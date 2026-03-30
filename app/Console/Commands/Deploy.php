@@ -29,7 +29,6 @@ class Deploy extends Command
     {
         $this->info('Starting deployment process...');
 
-        // Liste des commandes à exécuter dans l'ordre
         $commands = [
             'optimize:clear' => 'Clearing all optimized files...',
             'config:clear' => 'Clearing configuration cache...',
@@ -37,7 +36,6 @@ class Deploy extends Command
             'view:clear' => 'Clearing view cache...',
             'cache:clear' => 'Clearing application cache...',
             'migrate' => 'Running database migrations...',
-            'db:force-reset-sequences' => 'Force resetting PostgreSQL sequences (Railway version)...',
             'storage:link' => 'Creating storage symbolic links...',
         ];
 
