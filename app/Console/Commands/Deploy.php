@@ -54,7 +54,7 @@ class Deploy extends Command
 
                 $this->newLine();
             } catch (\Exception $e) {
-                $this->error("✗ {$command} threw exception: " . $e->getMessage());
+                $this->error("✗ {$command} threw exception: ".$e->getMessage());
                 Log::error("Deploy command exception: {$command}", ['exception' => $e]);
                 $this->newLine();
             }

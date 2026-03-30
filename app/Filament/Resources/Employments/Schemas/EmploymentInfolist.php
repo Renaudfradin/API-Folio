@@ -22,7 +22,16 @@ class EmploymentInfolist
                     ->url(fn ($record) => $record->link_job)
                     ->openUrlInNewTab(),
                 IconEntry::make('responce')
-                    ->boolean(),
+                    ->icon(fn (string $state): string => match ($state) {
+                        'no' => 'heroicon-o-x-mark',
+                        'yes' => 'heroicon-o-check-circle',
+                        'pending' => 'heroicon-o-clock',
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'no' => 'danger',
+                        'yes' => 'success',
+                        'pending' => 'warning',
+                    }),
                 TextEntry::make('response_date')
                     ->date(),
                 TextEntry::make('notes')

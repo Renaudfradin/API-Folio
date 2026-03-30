@@ -23,6 +23,7 @@ class DocumentableRelationManager extends RelationManager
                     ->disk('scaleway')
                     ->directory('documents')
                     ->image()
+                    ->maxSize(10240)
                     ->columnSpanFull()
                     ->downloadable()
                     ->openable()

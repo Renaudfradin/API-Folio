@@ -9,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -19,7 +20,7 @@ class EmploymentsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('date', 'desc')
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('company')
                     ->sortable()
@@ -33,13 +34,28 @@ class EmploymentsTable
                 TextColumn::make('platform')
                     ->sortable(),
                 IconColumn::make('responce')
-                    ->boolean(),
+                    ->icon(fn (string $state): Heroicon => match ($state) {
+                        'no' => Heroicon::OutlinedXMark,
+                        'yes' => Heroicon::OutlinedCheckCircle,
+                        'pending' => Heroicon::OutlinedClock,
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'no' => 'danger',
+                        'yes' => 'success',
+                        'pending' => 'warning',
+                    }),
             ])
             ->filters([
                 SelectFilter::make('platform')
                     ->options(Platform::class),
                 SelectFilter::make('responce')
-                    ->options([true => 'Oui', false => 'Non']),
+                    ->options(
+                        [
+                            'no' => 'Non',
+                            'yes' => 'Oui',
+                            'pending' => 'En attente',
+                        ]
+                    ),
 
             ])
             ->recordActions([
