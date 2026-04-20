@@ -34,7 +34,8 @@ class EmploymentForm
                         'yes' => 'Oui',
                         'no' => 'Non',
                         'pending' => 'En attente',
-                    ]),
+                    ])
+                    ->required(),
                 DatePicker::make('response_date'),
                 Textarea::make('notes')
                     ->rows(9)

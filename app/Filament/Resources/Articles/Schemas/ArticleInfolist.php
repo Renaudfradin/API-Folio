@@ -13,19 +13,27 @@ class ArticleInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('slug'),
-                ImageEntry::make('image')
-                    ->placeholder('-'),
-                TextEntry::make('content')
-                    ->columnSpanFull(),
+                TextEntry::make('title')
+                    ->label('Titre'),
+                TextEntry::make('slug')
+                    ->label('Slug'),
                 IconEntry::make('active')
                     ->boolean(),
-                TextEntry::make('category_id'),
+                TextEntry::make('category.name')
+                    ->label('Catégorie'),
+                TextEntry::make('content')
+                    ->label('Contenu')
+                    ->markdown()
+                    ->columnSpanFull(),
+                ImageEntry::make('image')
+                    ->label('Image')
+                    ->placeholder('-'),
                 TextEntry::make('created_at')
+                    ->label('Créé le')
                     ->dateTime()
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
+                    ->label('Modifié le')
                     ->dateTime()
                     ->placeholder('-'),
             ]);
