@@ -2,65 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryDetailResource;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use OpenApi\Annotations as OA;
 
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/categories",
+     *     summary="Get active categories",
+     *     tags={"Categories"},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get active categories"
+     *     )
+     * )
      */
     public function index()
     {
-        //
+        return CategoryResource::collection(Category::active()->get());
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCategoryRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/category/{category}",
+     *     summary="Get a category",
+     *     tags={"Categories"},
+     *
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="path",
+     *         required=true,
+     *         description="Slug of category to return",
+     *
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Get a category"
+     *     )
+     * )
      */
     public function show(Category $category)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCategoryRequest $request, Category $category)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Category $category)
-    {
-        //
+        return CategoryDetailResource::make($category);
     }
 }

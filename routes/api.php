@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CameraController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PhotographyController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 

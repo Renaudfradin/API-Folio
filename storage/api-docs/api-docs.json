@@ -6,6 +6,45 @@
         "version": "1.1.0"
     },
     "paths": {
+        "/api/articles": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get active articles",
+                "operationId": "11aa4cc6561a7b94c56d1201d62513ee",
+                "responses": {
+                    "200": {
+                        "description": "Get active articles"
+                    }
+                }
+            }
+        },
+        "/api/article/{article}": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Get an article",
+                "operationId": "85690454ae956559039798d39da0bfec",
+                "parameters": [
+                    {
+                        "name": "article",
+                        "in": "path",
+                        "description": "Slug of article to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get an article"
+                    }
+                }
+            }
+        },
         "/api/cameras": {
             "get": {
                 "tags": [
@@ -41,6 +80,45 @@
                 "responses": {
                     "200": {
                         "description": "Get a camera"
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get active categories",
+                "operationId": "3f5817a34833d0a1f4af4548dd3aeaba",
+                "responses": {
+                    "200": {
+                        "description": "Get active categories"
+                    }
+                }
+            }
+        },
+        "/api/category/{category}": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get a category",
+                "operationId": "3066bb42e69eebb086f181133f15b522",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "description": "Slug of category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get a category"
                     }
                 }
             }
@@ -193,8 +271,16 @@
     },
     "tags": [
         {
+            "name": "Articles",
+            "description": "Articles"
+        },
+        {
             "name": "Cameras",
             "description": "Cameras"
+        },
+        {
+            "name": "Categories",
+            "description": "Categories"
         },
         {
             "name": "Experiences",
