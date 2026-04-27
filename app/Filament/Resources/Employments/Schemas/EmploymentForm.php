@@ -20,6 +20,7 @@ class EmploymentForm
                 TextInput::make('title')
                     ->required(),
                 DatePicker::make('date')
+                    ->default(now())
                     ->required(),
                 Select::make('platform')
                     ->options(Platform::class)
@@ -30,11 +31,13 @@ class EmploymentForm
                     ->prefix('https://')
                     ->required(),
                 Select::make('responce')
+                    ->default('pending')
                     ->options([
                         'yes' => 'Oui',
                         'no' => 'Non',
                         'pending' => 'En attente',
-                    ]),
+                    ])
+                    ->required(),
                 DatePicker::make('response_date'),
                 Textarea::make('notes')
                     ->rows(9)

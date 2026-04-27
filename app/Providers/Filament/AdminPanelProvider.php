@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use App\Filament\Widgets\EmploymentsByCity;
+use App\Filament\Widgets\EmploymentsByPlatform;
 use App\Filament\Widgets\StatsOverview;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -43,6 +45,8 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 StatsOverview::class,
+                EmploymentsByCity::class,
+                EmploymentsByPlatform::class,
             ])
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth('full')

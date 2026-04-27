@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CameraController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PhotographyController;
@@ -25,4 +27,8 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::get('/photographies', [PhotographyController::class, 'index']);
     Route::get('/photography/{photography:slug}', [PhotographyController::class, 'show']);
     Route::get('/experiences', [ExperienceController::class, 'index']);
+    Route::get('/articles', [ArticleController::class, 'index']);
+    Route::get('/article/{article:slug}', [ArticleController::class, 'show']);
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/category/{category:slug}', [CategoryController::class, 'show']);
 });
