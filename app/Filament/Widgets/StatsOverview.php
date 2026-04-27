@@ -2,7 +2,9 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Article;
 use App\Models\Camera;
+use App\Models\Category;
 use App\Models\Document;
 use App\Models\Employment;
 use App\Models\Experience;
@@ -22,6 +24,8 @@ class StatsOverview extends StatsOverviewWidget
             Stat::make('Total Camera', Camera::count()),
             Stat::make('Total Document', Document::count()),
             Stat::make('Total Employment', Employment::count()),
+            Stat::make('Total Article', Article::count()),
+            Stat::make('Total Category', Category::count()),
         ];
     }
 }
