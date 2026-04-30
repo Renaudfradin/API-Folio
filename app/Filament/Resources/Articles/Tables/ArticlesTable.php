@@ -21,7 +21,9 @@ class ArticlesTable
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
-                ImageColumn::make('image'),
+                ImageColumn::make('image')
+                    ->disk('scaleway')
+                    ->visibility('public'),
                 IconColumn::make('active')
                     ->boolean(),
                 TextColumn::make('category.name')

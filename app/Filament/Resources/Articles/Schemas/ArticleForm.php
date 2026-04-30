@@ -26,7 +26,6 @@ class ArticleForm
                 TextInput::make('slug')
                     ->label('Slug')
                     ->required(),
-
                 Select::make('category_id')
                     ->label('Catégorie')
                     ->options(Category::query()->pluck('name', 'id'))
@@ -55,6 +54,9 @@ class ArticleForm
                     ->columnSpanFull(),
                 FileUpload::make('image')
                     ->label('Image')
+                    ->disk('scaleway')
+                    ->directory('articles')
+                    ->visibility('public')
                     ->image()
                     ->columnSpanFull(),
             ]);
