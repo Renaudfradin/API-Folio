@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-
+        if (!Schema::hasTable('employments')) {
+            return;
+        }
+        
         Schema::table('employments', function (Blueprint $table) {
             $table->string('responce', 255)->default('pending')->change();
         });

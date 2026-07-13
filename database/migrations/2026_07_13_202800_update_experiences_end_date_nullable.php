@@ -11,15 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('blocks')) {
-            return;
-        }
-        
-        Schema::create('blocks', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->timestamps();
+        Schema::table('experiences', function (Blueprint $table) {
+            $table->date('end_date')->nullable()->change();
         });
     }
 
@@ -28,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('blocks');
+        Schema::table('experiences', function (Blueprint $table) {
+            $table->date('end_date')->nullable(false)->change();
+        });
     }
 };
