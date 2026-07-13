@@ -2,18 +2,7 @@
 
 namespace App\Swagger;
 
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Get(
- *     path="/api/health",
- *     summary="Healthcheck",
- *     tags={"Health"},
- *
- *     @OA\Response(
- *         response=200,
- *         description="OK"
- *     )
- * )
- */
+#[OA\Info(title: 'API Folio', version: '1.1.0')]
 class SwaggerBootstrap {}

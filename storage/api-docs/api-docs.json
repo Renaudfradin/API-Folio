@@ -2,7 +2,6 @@
     "openapi": "3.0.0",
     "info": {
         "title": "API Folio",
-        "description": "Documentation de l'API Folio",
         "version": "1.1.0"
     },
     "paths": {
@@ -253,20 +252,6 @@
                     }
                 }
             }
-        },
-        "/api/health": {
-            "get": {
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Healthcheck",
-                "operationId": "f403f8ada34150fac8b7615713f0c943",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
         }
     },
     "tags": [
@@ -297,10 +282,6 @@
         {
             "name": "Projects",
             "description": "Projects"
-        },
-        {
-            "name": "Health",
-            "description": "Health"
         }
     ]
 }
