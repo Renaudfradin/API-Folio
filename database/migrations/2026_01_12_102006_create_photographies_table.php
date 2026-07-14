@@ -14,7 +14,7 @@ return new class extends Migration
         if (Schema::hasTable('photographies')) {
             return;
         }
-        
+
         Schema::create('photographies', function (Blueprint $table) {
             $table->id();
             $table->string('name');

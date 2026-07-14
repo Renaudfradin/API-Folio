@@ -14,7 +14,7 @@ return new class extends Migration
         if (Schema::hasTable('jobs')) {
             return;
         }
-        
+
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
@@ -28,7 +28,7 @@ return new class extends Migration
         if (Schema::hasTable('job_batches')) {
             return;
         }
-        
+
         Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
@@ -45,7 +45,7 @@ return new class extends Migration
         if (Schema::hasTable('failed_jobs')) {
             return;
         }
-        
+
         Schema::create('failed_jobs', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();

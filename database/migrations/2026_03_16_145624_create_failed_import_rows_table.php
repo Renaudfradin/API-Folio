@@ -14,7 +14,7 @@ return new class extends Migration
         if (Schema::hasTable('failed_import_rows')) {
             return;
         }
-        
+
         Schema::create('failed_import_rows', function (Blueprint $table): void {
             $table->id();
             $table->json('data');

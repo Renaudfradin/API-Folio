@@ -14,7 +14,7 @@ return new class extends Migration
         if (Schema::hasTable('cache')) {
             return;
         }
-        
+
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');

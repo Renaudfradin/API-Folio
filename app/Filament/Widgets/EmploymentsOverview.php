@@ -23,7 +23,7 @@ class EmploymentsOverview extends StatsOverviewWidget
             Stat::make('Total candidatures', $total),
             Stat::make('Réponses positives', $accepted),
             Stat::make('En attente', $pending),
-            Stat::make('Taux de réponse', number_format($responseRate, 1) . ' %'),
+            Stat::make('Taux de réponse', number_format($responseRate, 1).' %'),
         ];
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         if (Schema::hasTable('exports')) {
             return;
         }
-        
+
         Schema::create('exports', function (Blueprint $table): void {
             $table->id();
             $table->timestamp('completed_at')->nullable();
