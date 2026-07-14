@@ -18,6 +18,8 @@ Elle centralise la gestion des données et des fonctionnalités clés, et me ser
 ![home](public/img/home1.png)
 ![article](public/img/home2.png)
 ![article](public/img/home3.png)
+![article](public/img/home4.png)
+![article](public/img/home5.png)
 
 ### 🛠 Installation & Set Up
 
