@@ -23,6 +23,13 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('role')
                     ->sortable(),
+                TextColumn::make('linkedin_profile_id')
+                    ->label('LinkedIn ID')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('linkedin_synced_at')
+                    ->label('LinkedIn sync')
+                    ->dateTime()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

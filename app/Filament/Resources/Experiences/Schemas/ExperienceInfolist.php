@@ -29,6 +29,20 @@ class ExperienceInfolist
                     ->label('Type'),
                 TextEntry::make('company')
                     ->label('Entreprise'),
+                TextEntry::make('source')
+                    ->label('Source'),
+                TextEntry::make('external_id')
+                    ->label('External ID')
+                    ->placeholder('-'),
+                TextEntry::make('linkedin_url')
+                    ->label('LinkedIn URL')
+                    ->url(fn ($record) => $record->linkedin_url)
+                    ->openUrlInNewTab()
+                    ->placeholder('-'),
+                TextEntry::make('synced_at')
+                    ->label('Synchronisé le')
+                    ->dateTime()
+                    ->placeholder('-'),
                 IconEntry::make('active')
                     ->label('Actif')
                     ->boolean(),

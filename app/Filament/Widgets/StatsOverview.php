@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Document;
 use App\Models\Employment;
 use App\Models\Experience;
+use App\Models\LinkedinConnection;
+use App\Models\LinkedinProfileStat;
 use App\Models\Photography;
 use App\Models\Project;
 use Filament\Widgets\StatsOverviewWidget;
@@ -24,6 +26,8 @@ class StatsOverview extends StatsOverviewWidget
             Stat::make('Total Camera', Camera::count()),
             Stat::make('Total Document', Document::count()),
             Stat::make('Total Employment', Employment::count()),
+            Stat::make('Total Linkedin Connections', LinkedinConnection::count()),
+            Stat::make('Total Linkedin Stats', LinkedinProfileStat::count()),
             Stat::make('Total Article', Article::count()),
             Stat::make('Total Category', Category::count()),
         ];
