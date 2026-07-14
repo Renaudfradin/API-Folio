@@ -18,11 +18,16 @@ class Experience extends Model
         'end_date',
         'type',
         'active',
+        'source',
+        'external_id',
+        'linkedin_url',
+        'synced_at',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
+        'synced_at' => 'datetime',
     ];
 
     public function scopeActive($query)

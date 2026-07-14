@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Enums\Stack;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -34,6 +35,23 @@ class ProjectForm
                     ->multiple()
                     ->preload()
                     ->searchable(),
+                Select::make('source')
+                    ->label('Source')
+                    ->options([
+                        'manual' => 'Manuel',
+                        'linkedin' => 'LinkedIn',
+                    ])
+                    ->default('manual')
+                    ->required(),
+                TextInput::make('external_id')
+                    ->label('External ID')
+                    ->placeholder('Identifiant LinkedIn'),
+                TextInput::make('linkedin_url')
+                    ->label('LinkedIn URL')
+                    ->url()
+                    ->prefix('https://'),
+                DateTimePicker::make('synced_at')
+                    ->label('Synchronisé le'),
                 TextInput::make('url')
                     ->label('Url')
                     ->prefix('https://'),

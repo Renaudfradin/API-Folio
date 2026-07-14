@@ -6,6 +6,8 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements FilamentUser
@@ -18,6 +20,10 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'linkedin_profile_id',
+        'linkedin_url',
+        'linkedin_headline',
+        'linkedin_synced_at',
     ];
 
     protected $hidden = [
@@ -34,6 +40,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'linkedin_synced_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -56,5 +63,15 @@ class User extends Authenticatable implements FilamentUser
     public function isPlatform(): bool
     {
         return $this->role === 'platform';
+    }
+
+    public function linkedinConnection(): HasOne
+    {
+        return $this->hasOne(LinkedinConnection::class);
+    }
+
+    public function linkedinProfileStats(): HasMany
+    {
+        return $this->hasMany(LinkedinProfileStat::class);
     }
 }

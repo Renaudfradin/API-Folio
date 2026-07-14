@@ -19,10 +19,15 @@ class Project extends Model
         'url_github',
         'stack',
         'active',
+        'source',
+        'external_id',
+        'linkedin_url',
+        'synced_at',
     ];
 
     protected $casts = [
         'stack' => 'array',
+        'synced_at' => 'datetime',
     ];
 
     public function documents()

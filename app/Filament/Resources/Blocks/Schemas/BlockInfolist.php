@@ -13,6 +13,20 @@ class BlockInfolist
             ->components([
                 TextEntry::make('title')
                     ->label('Titre'),
+                TextEntry::make('source')
+                    ->label('Source'),
+                TextEntry::make('external_id')
+                    ->label('External ID')
+                    ->placeholder('-'),
+                TextEntry::make('linkedin_url')
+                    ->label('LinkedIn URL')
+                    ->url(fn ($record) => $record->linkedin_url)
+                    ->openUrlInNewTab()
+                    ->placeholder('-'),
+                TextEntry::make('synced_at')
+                    ->label('Synchronisé le')
+                    ->dateTime()
+                    ->placeholder('-'),
                 TextEntry::make('content')
                     ->label('Contenu')
                     ->columnSpanFull(),

@@ -20,6 +20,16 @@ class UserForm
                     ->email()
                     ->required(),
                 DateTimePicker::make('email_verified_at'),
+                TextInput::make('linkedin_profile_id')
+                    ->label('LinkedIn profile ID'),
+                TextInput::make('linkedin_url')
+                    ->label('LinkedIn URL')
+                    ->url()
+                    ->prefix('https://'),
+                TextInput::make('linkedin_headline')
+                    ->label('LinkedIn headline'),
+                DateTimePicker::make('linkedin_synced_at')
+                    ->label('LinkedIn synced at'),
                 TextInput::make('password')
                     ->password()
                     ->required(),

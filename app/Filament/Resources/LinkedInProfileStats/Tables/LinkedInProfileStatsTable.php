@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Blocks\Tables;
+namespace App\Filament\Resources\LinkedInProfileStats\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -11,25 +12,28 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class BlocksTable
+class LinkedInProfileStatsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
-                TextColumn::make('title')
-                    ->label('Titre')
+                TextColumn::make('user.name')
+                    ->label('Utilisateur')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('content')
-                    ->label('Contenu')
+                TextColumn::make('metric_label')
+                    ->label('Libellé')
                     ->sortable()
-                    ->limit(50)
                     ->searchable(),
+                TextColumn::make('value')
+                    ->label('Valeur')
+                    ->placeholder('-'),
                 TextColumn::make('source')
                     ->label('Source')
                     ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('synced_at')
                     ->label('Synchronisé le')
                     ->dateTime()
@@ -43,10 +47,11 @@ class BlocksTable
                     ]),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
-
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

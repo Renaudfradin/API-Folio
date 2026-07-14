@@ -32,6 +32,15 @@ class ExperiencesTable
                     ->label('Type')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('source')
+                    ->label('Source')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('synced_at')
+                    ->label('Synchronisé le')
+                    ->dateTime()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('active')
                     ->label('Actif')
                     ->boolean(),
@@ -48,6 +57,12 @@ class ExperiencesTable
                     ->options([
                         1 => 'Actif',
                         0 => 'Inactif',
+                    ]),
+
+                SelectFilter::make('source')
+                    ->options([
+                        'manual' => 'Manuel',
+                        'linkedin' => 'LinkedIn',
                     ]),
             ])
             ->recordActions([

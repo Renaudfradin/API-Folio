@@ -12,5 +12,13 @@ class Block extends Model
     protected $fillable = [
         'title',
         'content',
+        'source',
+        'external_id',
+        'linkedin_url',
+        'synced_at',
+    ];
+
+    protected $casts = [
+        'synced_at' => 'datetime',
     ];
 }
