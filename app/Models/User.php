@@ -57,4 +57,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->role === 'platform';
     }
+
+    public function instagramAccounts()
+    {
+        return $this->hasMany(InstagramAccount::class);
+    }
 }

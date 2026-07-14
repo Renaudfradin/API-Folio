@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'instagram' => [
+        'client_id' => env('INSTAGRAM_CLIENT_ID', env('META_APP_ID')),
+        'client_secret' => env('INSTAGRAM_CLIENT_SECRET', env('META_APP_SECRET')),
+        'redirect_uri' => env('INSTAGRAM_REDIRECT_URI'),
+        'graph_version' => env('INSTAGRAM_GRAPH_VERSION', 'v25.0'),
+        'scopes' => array_filter(array_map('trim', explode(',', env('INSTAGRAM_SCOPES', 'instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement')))),
+    ],
+
 ];
