@@ -18,6 +18,14 @@ class Article extends Model
         'category_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'content' => 'array',
+            'active' => 'boolean',
+        ];
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
