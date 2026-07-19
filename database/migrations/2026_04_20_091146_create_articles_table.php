@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('articles')) {
+            return;
+        }
+
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('image')->nullable();
-            $table->longText('content');
+            $table->json('content');
             $table->boolean('active')->default(false);
             $table->foreignId('category_id')->constrained('categories');
             $table->timestamps();

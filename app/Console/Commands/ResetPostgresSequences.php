@@ -29,35 +29,37 @@ class ResetPostgresSequences extends Command
             $this->info('Mode production: '.($isProduction ? 'oui' : 'non'));
         }
 
-        if ($isProduction) {
-            // Mode compatible Railway/production : on liste les tables qui ont une colonne "id"
-            // auto-incrémentée, puis on récupère la séquence associée via pg_get_serial_sequence.
-            // Cela évite de dépendre de certains catalogues pg_* parfois restreints selon les rôles.
+        // Détection principale compatible local et production :
+        // on repère les colonnes "id" auto-incrémentées puis on récupère la séquence associée
+        // depuis le default PostgreSQL, ce qui marche même quand pg_get_serial_sequence() renvoie NULL.
+        $tables = DB::select("
+            SELECT
+                c.table_name,
+                c.column_default AS column_default,
+                pg_get_serial_sequence('public.' || quote_ident(c.table_name), 'id') AS serial_sequence_name
+            FROM information_schema.columns c
+            WHERE c.table_schema = 'public'
+              AND c.column_name = 'id'
+              AND (
+                    c.column_default LIKE 'nextval%'
+                 OR c.is_identity = 'YES'
+              )
+            ORDER BY c.table_name
+        ");
+
+        if (empty($tables) && ! $isProduction) {
+            // Fallback local pour les installations plus anciennes ou plus exotiques.
+            $this->warn('Détection principale vide, tentative avec les catalogues pg_*...');
             $tables = DB::select("
                 SELECT
-                    c.table_name,
-                    pg_get_serial_sequence('public.' || quote_ident(c.table_name), 'id') AS sequence_name
-                FROM information_schema.columns c
-                WHERE c.table_schema = 'public'
-                  AND c.column_name = 'id'
-                  AND (
-                        c.column_default LIKE 'nextval%'
-                     OR c.is_identity = 'YES'
-                  )
-                ORDER BY c.table_name
-            ");
-        } else {
-            // Comportement local (Sail/Docker) : approche directe via catalogues pg_*.
-            $tables = DB::select("
-                SELECT
-                    seq.sequencename AS sequence_name,
-                    tab.relname      AS table_name
+                    seq.schemaname || '.' || seq.sequencename AS sequence_name,
+                    tab.relname AS table_name
                 FROM pg_sequences seq
                 JOIN pg_class seq_class
                     ON seq_class.relname = seq.sequencename
                 JOIN pg_depend dep
                     ON dep.objid = seq_class.oid
-                   AND dep.deptype = 'a'
+                   AND dep.deptype IN ('a', 'i')
                 JOIN pg_class tab
                     ON tab.oid = dep.refobjid
                 JOIN pg_attribute attr
@@ -67,9 +69,13 @@ class ResetPostgresSequences extends Command
                 JOIN pg_namespace ns
                     ON ns.oid = tab.relnamespace
                    AND ns.nspname = 'public'
+                WHERE seq.schemaname = 'public'
                 ORDER BY tab.relname
             ");
         }
+
+        $tables = $this->normalizeSequenceNames($tables);
+        $tables = $this->prioritizeMigrationsTable($tables);
 
         if (empty($tables)) {
             $this->warn('Aucune table avec séquence trouvée.');
@@ -98,31 +104,22 @@ class ResetPostgresSequences extends Command
             $sequenceName = $table->sequence_name;
 
             try {
-                if ($isProduction) {
-                    if (empty($sequenceName)) {
-                        if ($isDebug) {
-                            $this->warn("Séquence introuvable (pg_get_serial_sequence=NULL) pour la table {$tableName}");
-                        }
-                        $skipped++;
-
-                        continue;
+                if (empty($sequenceName)) {
+                    if ($isDebug) {
+                        $this->warn("Séquence introuvable (pg_get_serial_sequence=NULL) pour la table {$tableName}");
                     }
+                    $skipped++;
 
-                    $quotedTable = $this->quoteQualifiedIdentifier('public', $tableName);
-                    $maxResult = DB::selectOne("SELECT COALESCE(MAX(id), 0) AS max_id FROM {$quotedTable}");
-                } else {
-                    $maxResult = DB::selectOne("SELECT COALESCE(MAX(id), 0) AS max_id FROM \"{$tableName}\"");
+                    continue;
                 }
+
+                $quotedTable = $this->quoteQualifiedIdentifier('public', $tableName);
+                $maxResult = DB::selectOne("SELECT COALESCE(MAX(id), 0) AS max_id FROM {$quotedTable}");
                 $maxId = (int) $maxResult->max_id;
 
-                if ($isProduction) {
-                    $quotedSequence = $this->quoteQualifiedIdentifierFromRegclass($sequenceName);
-                    $seqResult = DB::selectOne("SELECT last_value, is_called FROM {$quotedSequence}");
-                    $currentValue = (int) $seqResult->last_value;
-                } else {
-                    $seqResult = DB::selectOne("SELECT last_value FROM \"{$sequenceName}\"");
-                    $currentValue = (int) $seqResult->last_value;
-                }
+                $quotedSequence = $this->quoteQualifiedIdentifierFromRegclass($sequenceName);
+                $seqResult = DB::selectOne("SELECT last_value, is_called FROM {$quotedSequence}");
+                $currentValue = (int) $seqResult->last_value;
 
                 // Si la table est vide, on remet la séquence à 1
                 $targetValue = $maxId > 0 ? $maxId : 1;
@@ -140,11 +137,7 @@ class ResetPostgresSequences extends Command
                 if ($isForce || $currentValue < $maxId) {
                     $status = $isForce ? 'Forcee' : 'Desynchronisee';
                     if (! $isDryRun) {
-                        if ($isProduction) {
-                            DB::statement('SELECT setval(?, ?, ?)', [$sequenceName, $targetValue, $isCalled]);
-                        } else {
-                            DB::statement("SELECT setval('\"{$sequenceName}\"', {$targetValue})");
-                        }
+                        DB::statement('SELECT setval(?, ?, ?)', [$sequenceName, $targetValue, $isCalled]);
                         $status = 'Corrigee';
                     }
                     $fixed++;
@@ -187,10 +180,58 @@ class ResetPostgresSequences extends Command
     {
         $parts = explode('.', $regclass, 2);
         if (count($parts) === 2) {
-            return $this->quoteQualifiedIdentifier($parts[0], $parts[1]);
+            return $this->quoteQualifiedIdentifier(trim($parts[0], '"'), trim($parts[1], '"'));
         }
 
         // Fallback (sans schéma) : on quote uniquement le nom.
-        return '"'.str_replace('"', '""', $regclass).'"';
+        return '"'.str_replace('"', '""', trim($regclass, '"')).'"';
+    }
+
+    /**
+     * @param  array<int, object>  $tables
+     * @return array<int, object>
+     */
+    private function normalizeSequenceNames(array $tables): array
+    {
+        return array_values(array_map(function (object $table): object {
+            if (! empty($table->serial_sequence_name)) {
+                $table->sequence_name = $table->serial_sequence_name;
+
+                return $table;
+            }
+
+            if (! empty($table->column_default) && preg_match("/^nextval\\('(.+)'::regclass\\)$/", $table->column_default, $matches)) {
+                $table->sequence_name = $matches[1];
+
+                return $table;
+            }
+
+            $table->sequence_name = null;
+
+            return $table;
+        }, $tables));
+    }
+
+    /**
+     * Force la table migrations en premier pour réparer les cas où sa séquence
+     * est en retard et bloque la création des nouvelles migrations en local.
+     *
+     * @param  array<int, object>  $tables
+     * @return array<int, object>
+     */
+    private function prioritizeMigrationsTable(array $tables): array
+    {
+        usort($tables, function (object $left, object $right): int {
+            $leftIsMigrations = $left->table_name === 'migrations';
+            $rightIsMigrations = $right->table_name === 'migrations';
+
+            if ($leftIsMigrations === $rightIsMigrations) {
+                return strcmp($left->table_name, $right->table_name);
+            }
+
+            return $leftIsMigrations ? -1 : 1;
+        });
+
+        return $tables;
     }
 }

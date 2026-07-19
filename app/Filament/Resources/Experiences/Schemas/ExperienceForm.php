@@ -33,8 +33,7 @@ class ExperienceForm
                     ->label('Date de début')
                     ->required(),
                 DatePicker::make('end_date')
-                    ->label('Date de fin')
-                    ->required(),
+                    ->label('Date de fin'),
                 Select::make('type')
                     ->label('Type')
                     ->required()

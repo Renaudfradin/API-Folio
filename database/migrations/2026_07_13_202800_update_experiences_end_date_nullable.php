@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('employments')) {
-            return;
-        }
-
-        Schema::table('employments', function (Blueprint $table) {
-            $table->string('responce', 255)->default('pending')->change();
+        Schema::table('experiences', function (Blueprint $table) {
+            $table->date('end_date')->nullable()->change();
         });
-
     }
 
     /**
@@ -26,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-
-        Schema::table('employments', function (Blueprint $table) {
-            $table->boolean('responce')->change();
+        Schema::table('experiences', function (Blueprint $table) {
+            $table->date('end_date')->nullable(false)->change();
         });
     }
 };

@@ -2,19 +2,21 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\TransformsArticleContent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class ArticleResource extends JsonResource
 {
+    use TransformsArticleContent;
+
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
-            'image' => Storage::disk('scaleway')->url($this->image),
+            'image' => $this->scalewayUrl($this->image),
             'active' => $this->active,
             'category' => new CategoryResource($this->whenLoaded('category')),
         ];
