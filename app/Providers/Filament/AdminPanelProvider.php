@@ -57,6 +57,9 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn (): string => 'Employments')
                     ->icon('heroicon-o-briefcase'),
                 NavigationGroup::make()
+                    ->label(fn (): string => 'GitHub')
+                    ->icon('heroicon-o-code-bracket'),
+                NavigationGroup::make()
                     ->label(fn (): string => 'Options')
                     ->icon('heroicon-o-cog-6-tooth'),
             ])

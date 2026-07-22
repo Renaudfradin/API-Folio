@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'github' => [
+        'token' => env('GITHUB_TOKEN'),
+        'username' => env('GITHUB_USERNAME'),
+        'base_url' => env('GITHUB_BASE_URL', 'https://api.github.com'),
+        'cache_ttl' => (int) env('GITHUB_CACHE_TTL', 600),
+    ],
+
 ];
