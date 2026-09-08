@@ -1,0 +1,6 @@
+{
+  "version": "1",
+  "name": "API Folio",
+  "type": "collection",
+  "ignore": ["node_modules", ".git"]
+}

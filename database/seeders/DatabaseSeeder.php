@@ -42,5 +42,9 @@ class DatabaseSeeder extends Seeder
         ]);
         Block::factory(12)->create();
         Project::factory(12)->create();
+
+        if (app()->environment('local', 'testing')) {
+            $this->call(BrunoSeeder::class);
+        }
     }
 }

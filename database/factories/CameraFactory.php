@@ -17,7 +17,6 @@ class CameraFactory extends Factory
             'slug' => Str::slug($name),
             'serie' => fake()->randomElement(Serie::cases())->value,
             'content' => fake()->paragraph(),
-            'image' => 'camera/01KG219B0EBXR1EP86NAXM23MA.jpg',
         ];
     }
 }
