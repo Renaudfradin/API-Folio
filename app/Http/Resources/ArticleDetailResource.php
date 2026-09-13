@@ -18,7 +18,6 @@ class ArticleDetailResource extends JsonResource
             'slug' => $this->slug,
             'image' => $this->scalewayUrl($this->image),
             'content' => $this->transformContent($this->content),
-            'active' => $this->active,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

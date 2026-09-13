@@ -27,6 +27,8 @@ class ArticleController extends Controller
     #[OA\Response(response: 200, description: 'Get an article')]
     public function show(Article $article)
     {
+        $article->loadMissing('category');
+
         return ArticleDetailResource::make($article);
     }
 }

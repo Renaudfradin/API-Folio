@@ -9,6 +9,7 @@ use Google\Service\SearchConsole;
 use Google\Service\SearchConsole\ApiDataRow;
 use Google\Service\SearchConsole\SearchAnalyticsQueryRequest;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
 
@@ -250,15 +251,13 @@ class GoogleSearchConsoleService
 
     protected function wrapGoogleException(Throwable $exception): RuntimeException
     {
-        if ($exception instanceof GoogleServiceException) {
-            return new RuntimeException(
-                'Erreur API Google Search Console : '.$exception->getMessage(),
-                previous: $exception,
-            );
-        }
+        Log::error('Google Search Console API error', [
+            'message' => $exception->getMessage(),
+            'exception' => $exception,
+        ]);
 
         return new RuntimeException(
-            'Erreur Google Search Console : '.$exception->getMessage(),
+            'Erreur Google Search Console. Veuillez réessayer plus tard.',
             previous: $exception,
         );
     }

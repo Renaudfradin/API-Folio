@@ -13,7 +13,7 @@ class CameraController extends Controller
     #[OA\Response(response: 200, description: 'Get active cameras')]
     public function index()
     {
-        return CameraResource::collection(Camera::active()->get());
+        return CameraResource::collection(Camera::with('documents')->active()->get());
     }
 
     #[OA\Get(path: '/api/camera/{camera}', summary: 'Get a camera', tags: ['Cameras'])]
@@ -27,6 +27,8 @@ class CameraController extends Controller
     #[OA\Response(response: 200, description: 'Get a camera')]
     public function show(Camera $camera)
     {
+        $camera->loadMissing('documents');
+
         return CameraDetailResource::make($camera);
     }
 }

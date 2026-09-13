@@ -12,12 +12,12 @@ class EmploymentPolicy
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function view(User $user, Employment $employment): bool
     {
-        return true;
+        return self::isCurrentUserAdmin();
     }
 
     public function create(User $user): bool

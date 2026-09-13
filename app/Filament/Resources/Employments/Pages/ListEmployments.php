@@ -21,7 +21,7 @@ class ListEmployments extends ListRecords
             self::applyAdminVisibility(ImportAction::make()
                 ->importer(EmploymentImporter::class)),
 
-            CreateAction::make(),
+            self::applyAdminVisibility(CreateAction::make()),
         ];
     }
 }

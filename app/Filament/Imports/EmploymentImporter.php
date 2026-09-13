@@ -34,8 +34,7 @@ class EmploymentImporter extends Importer
                 ->requiredMapping()
                 ->rules(['required']),
             ImportColumn::make('responce')
-                ->boolean()
-                ->rules(['boolean']),
+                ->rules(['nullable', 'in:yes,no,pending']),
             ImportColumn::make('response_date')
                 ->rules(['date']),
             ImportColumn::make('notes'),

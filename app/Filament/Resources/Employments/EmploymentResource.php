@@ -10,6 +10,7 @@ use App\Filament\Resources\Employments\Schemas\EmploymentForm;
 use App\Filament\Resources\Employments\Schemas\EmploymentInfolist;
 use App\Filament\Resources\Employments\Tables\EmploymentsTable;
 use App\Models\Employment;
+use App\Traits\HasRoleBasedVisibility;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -18,7 +19,14 @@ use Filament\Tables\Table;
 
 class EmploymentResource extends Resource
 {
+    use HasRoleBasedVisibility;
+
     protected static ?string $model = Employment::class;
+
+    public static function canViewAny(): bool
+    {
+        return self::isCurrentUserAdmin();
+    }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

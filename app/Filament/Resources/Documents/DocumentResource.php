@@ -32,7 +32,7 @@ class DocumentResource extends Resource
         return self::isCurrentUserAdmin();
     }
 
-    protected static ?string $recordTitleAttribute = 'title';
+    protected static ?string $recordTitleAttribute = 'image';
 
     public static function form(Schema $schema): Schema
     {

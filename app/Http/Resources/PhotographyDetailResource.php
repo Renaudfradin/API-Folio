@@ -18,7 +18,7 @@ class PhotographyDetailResource extends JsonResource
             'date' => $this->date?->toDateString(),
             'series' => $this->series,
             'city' => $this->city,
-            'camera_name' => $this->camera->name,
+            'camera_name' => $this->camera?->name,
         ];
     }
 }
