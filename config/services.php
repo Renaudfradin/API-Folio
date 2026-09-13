@@ -43,7 +43,9 @@ return [
     ],
 
     'search_console' => [
-        'credentials_path' => env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS'),
+        'credentials_path' => ($path = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS'))
+            ? (str_starts_with($path, '/') ? $path : base_path($path))
+            : null,
         'credentials_json' => env('GOOGLE_SERVICE_ACCOUNT_JSON'),
         'cache_ttl' => (int) env('SEARCH_CONSOLE_CACHE_TTL', 3600),
         'sites' => [
