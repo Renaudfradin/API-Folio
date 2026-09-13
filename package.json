@@ -7,9 +7,12 @@
     },
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "bruno:run": "cd bruno && bru run --env Local",
+        "bruno:run:ci": "cd bruno && bru run --env CI --reporter-junit ../reports/bruno-junit.xml"
     },
     "devDependencies": {
+        "@usebruno/cli": "^2.0.0",
         "@tailwindcss/vite": "^4.0.0",
         "axios": "^1.11.0",
         "concurrently": "^9.0.1",

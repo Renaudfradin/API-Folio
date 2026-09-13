@@ -2,12 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\ResolvesScalewayUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class CameraDetailResource extends JsonResource
 {
+    use ResolvesScalewayUrl;
+
     public function toArray(Request $request): array
     {
         return [
@@ -15,7 +17,7 @@ class CameraDetailResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'content' => $this->content,
-            'image' => Storage::disk('scaleway')->url($this->documents->first()->image ?? null),
+            'image' => $this->documentImageUrl(),
             'serie' => $this->serie,
         ];
     }

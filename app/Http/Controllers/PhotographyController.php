@@ -13,7 +13,7 @@ class PhotographyController extends Controller
     #[OA\Response(response: 200, description: 'Get active photographies')]
     public function index()
     {
-        return PhotographyResource::collection(Photography::active()->get());
+        return PhotographyResource::collection(Photography::with('camera')->active()->get());
     }
 
     #[OA\Get(path: '/api/photography/{photography}', summary: 'Get a photography', tags: ['Photographies'])]
@@ -27,6 +27,8 @@ class PhotographyController extends Controller
     #[OA\Response(response: 200, description: 'Get a photography')]
     public function show(Photography $photography)
     {
+        $photography->loadMissing('camera');
+
         return PhotographyDetailResource::make($photography);
     }
 }

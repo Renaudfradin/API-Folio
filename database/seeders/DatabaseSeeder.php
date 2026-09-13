@@ -22,16 +22,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        User::factory()->admin()->create([
             'name' => 'Test Admin',
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
-        User::factory()->create([
+        User::factory()->demo()->create([
             'name' => 'Test Renaud',
             'email' => 'renaud@gmail.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
         ]);
 
         Experience::factory(12)->create();
@@ -42,5 +44,9 @@ class DatabaseSeeder extends Seeder
         ]);
         Block::factory(12)->create();
         Project::factory(12)->create();
+
+        if (app()->environment('local', 'testing')) {
+            $this->call(BrunoSeeder::class);
+        }
     }
 }

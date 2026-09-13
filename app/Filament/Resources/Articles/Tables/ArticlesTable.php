@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles\Tables;
 
+use App\Traits\HasRoleBasedVisibility;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -15,6 +16,8 @@ use Filament\Tables\Table;
 
 class ArticlesTable
 {
+    use HasRoleBasedVisibility;
+
     public static function configure(Table $table): Table
     {
         return $table
@@ -41,12 +44,12 @@ class ArticlesTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                self::applyAdminVisibility(EditAction::make()),
+                self::applyAdminVisibility(DeleteAction::make()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    self::applyAdminVisibility(DeleteBulkAction::make()),
                 ]),
             ]);
     }

@@ -13,7 +13,7 @@ class ProjectController extends Controller
     #[OA\Response(response: 200, description: 'Get active projects')]
     public function index()
     {
-        return ProjectResource::collection(Project::active()->get());
+        return ProjectResource::collection(Project::with('documents')->active()->get());
     }
 
     #[OA\Get(path: '/api/project/{project}', summary: 'Get a project', tags: ['Projects'])]
@@ -27,6 +27,8 @@ class ProjectController extends Controller
     #[OA\Response(response: 200, description: 'Get a project')]
     public function show(Project $project)
     {
+        $project->loadMissing('documents');
+
         return ProjectDetailResource::make($project);
     }
 }

@@ -9,7 +9,17 @@ class Document extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'image',
+        'documentable_id',
+        'documentable_type',
+    ];
+
+    public const ALLOWED_MORPH_TYPES = [
+        \App\Models\Camera::class,
+        \App\Models\Project::class,
+        \App\Models\Photography::class,
+    ];
 
     public function documentable()
     {

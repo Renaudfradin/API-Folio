@@ -1,0 +1,22 @@
+meta {
+  name: Show Article
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/article/{{articleSlug}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("response has article data", function() {
+    expect(res.getBody()).to.have.property("data");
+    expect(res.getBody().data).to.have.property("slug");
+  });
+}

@@ -1,0 +1,94 @@
+name: Bruno API Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  bruno:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U sail"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          echo "APP_ENV=testing" >> .env
+          echo "DB_CONNECTION=pgsql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DB_DATABASE=testing" >> .env
+          echo "DB_USERNAME=sail" >> .env
+          echo "DB_PASSWORD=password" >> .env
+          echo "OBJECT_STORAGE_PUBLIC_URL=https://cdn.example.com" >> .env
+          echo "SCALEWAY_KEY=test" >> .env
+          echo "SCALEWAY_SECRET=test" >> .env
+          echo "SCALEWAY_REGION=fr-par" >> .env
+          echo "SCALEWAY_BUCKET=test" >> .env
+
+      - name: Run migrations and seeders
+        run: php artisan migrate --force --seed
+        env:
+          APP_ENV: testing
+
+      - name: Start Laravel server
+        run: php artisan serve --host=127.0.0.1 --port=8000 &
+
+      - name: Wait for API
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://127.0.0.1:8000/api/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API did not become ready in time"
+          exit 1
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run Bruno collection
+        run: npm run bruno:run:ci
+
+      - name: Upload Bruno test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bruno-junit-report
+          path: reports/bruno-junit.xml

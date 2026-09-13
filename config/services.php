@@ -42,4 +42,20 @@ return [
         'cache_ttl' => (int) env('GITHUB_CACHE_TTL', 600),
     ],
 
+    'search_console' => [
+        'credentials_path' => ($path = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS'))
+            ? (str_starts_with($path, '/') ? $path : base_path($path))
+            : null,
+        'credentials_json' => env('GOOGLE_SERVICE_ACCOUNT_JSON'),
+        'cache_ttl' => (int) env('SEARCH_CONSOLE_CACHE_TTL', 3600),
+        'sites' => [
+            'renaudfradin' => [
+                'property' => env('SEARCH_CONSOLE_RENAUDFRADIN_PROPERTY'),
+            ],
+            'renaudfradinphoto' => [
+                'property' => env('SEARCH_CONSOLE_RENAUDFRADINPHOTO_PROPERTY'),
+            ],
+        ],
+    ],
+
 ];

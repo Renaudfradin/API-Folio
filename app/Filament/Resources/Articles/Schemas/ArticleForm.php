@@ -88,6 +88,12 @@ class ArticleForm
                                     ->disk('scaleway')
                                     ->directory('articles/files')
                                     ->visibility('public')
+                                    ->acceptedFileTypes([
+                                        'application/pdf',
+                                        'application/zip',
+                                        'application/x-zip-compressed',
+                                    ])
+                                    ->maxSize(10240)
                                     ->required(),
                                 TextInput::make('label')
                                     ->label('Libellé')

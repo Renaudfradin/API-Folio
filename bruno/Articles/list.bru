@@ -1,0 +1,22 @@
+meta {
+  name: List Articles
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/articles
+  body: none
+  auth: none
+}
+
+tests {
+  test("status is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("response has data array", function() {
+    expect(res.getBody()).to.have.property("data");
+    expect(res.getBody().data).to.be.an("array");
+  });
+}

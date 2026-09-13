@@ -16,7 +16,6 @@ class ProjectFactory extends Factory
             'name' => $name,
             'slug' => Str::slug($name.'-'.fake()->unique()->numberBetween(1, 9999)),
             'description' => fake()->sentence(12),
-            'image' => 'project/01KF0Q12A0YF08DEZCMCVVJWPX.jpg',
             'url' => fake()->url(),
             'url_github' => fake()->url(),
             'stack' => (string) fake()->randomElement(Stack::cases())->value,

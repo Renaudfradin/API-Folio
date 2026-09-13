@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Resources\Employments\EmploymentResource;
+use App\Traits\HasRoleBasedVisibility;
 use App\Filament\Widgets\EmploymentsByCity;
 use App\Filament\Widgets\EmploymentsByPlatform;
 use App\Filament\Widgets\EmploymentsOverview;
@@ -13,7 +14,14 @@ use UnitEnum;
 
 class EmploymentsDashboard extends Page
 {
+    use HasRoleBasedVisibility;
+
     protected static string|UnitEnum|null $navigationGroup = 'Employments';
+
+    public static function canAccess(): bool
+    {
+        return self::isCurrentUserAdmin();
+    }
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar-square';
 
