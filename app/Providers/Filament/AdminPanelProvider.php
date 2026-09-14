@@ -60,6 +60,9 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn (): string => 'GitHub')
                     ->icon('heroicon-o-code-bracket'),
                 NavigationGroup::make()
+                    ->label(fn (): string => 'Social')
+                    ->icon('heroicon-o-share'),
+                NavigationGroup::make()
                     ->label(fn (): string => 'Options')
                     ->icon('heroicon-o-cog-6-tooth'),
             ])
