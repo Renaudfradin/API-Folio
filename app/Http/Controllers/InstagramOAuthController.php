@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\InstagramAccount;
 use App\Services\Instagram\InstagramGraphService;
 use App\Services\Instagram\InstagramSyncService;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
@@ -16,9 +19,18 @@ class InstagramOAuthController extends Controller
 {
     public function redirect(InstagramGraphService $graph): RedirectResponse
     {
-        $state = (string) Str::uuid();
+        $configurationError = $graph->oauthConfigurationError();
 
-        session(['instagram_oauth_state' => $state]);
+        if ($configurationError !== null) {
+            return redirect()
+                ->route('filament.admin.resources.instagram-accounts.index')
+                ->with('error', $configurationError);
+        }
+
+        $state = Crypt::encrypt([
+            'nonce' => (string) Str::uuid(),
+            'user_id' => Auth::id(),
+        ]);
 
         return redirect()->away($graph->buildOAuthUrl($state));
     }
@@ -28,20 +40,36 @@ class InstagramOAuthController extends Controller
         InstagramGraphService $graph,
         InstagramSyncService $syncService,
     ): RedirectResponse {
+        $indexRoute = 'filament.admin.resources.instagram-accounts.index';
+
         if ($request->filled('error')) {
             return redirect()
-                ->route('filament.admin.resources.instagram-accounts.index')
+                ->route($indexRoute)
                 ->with('error', $request->string('error_description')->toString() ?: 'Connexion Instagram annulée.');
         }
 
         abort_unless($request->has('code'), 400, 'Code OAuth manquant.');
-        abort_unless($request->string('state')->toString() === session('instagram_oauth_state'), 403, 'État OAuth invalide.');
 
-        $shortLivedTokenResponse = $graph->exchangeCodeForAccessToken($request->string('code')->toString());
+        $userId = $this->resolveOAuthUserId($request->string('state')->toString());
+
+        try {
+            $shortLivedTokenResponse = $graph->exchangeCodeForAccessToken($request->string('code')->toString());
+        } catch (RequestException $exception) {
+            Log::warning('Instagram OAuth token exchange failed.', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->route($indexRoute)
+                ->with('error', 'Impossible d’échanger le code Instagram. Vérifiez l’URI de redirection et les identifiants Meta.');
+        }
+
         $tokenResponse = $shortLivedTokenResponse;
+        $expiresIn = null;
 
         try {
             $tokenResponse = $graph->exchangeForLongLivedToken($shortLivedTokenResponse['access_token']);
+            $expiresIn = $tokenResponse['expires_in'] ?? null;
         } catch (Throwable) {
             // On conserve le token court si l'échange long terme échoue.
         }
@@ -50,30 +78,35 @@ class InstagramOAuthController extends Controller
 
         abort_unless($accessToken, 422, 'Impossible de récupérer un access token Instagram.');
 
-        $pages = $graph->getPages($accessToken);
-        $page = collect($pages)->first(fn (array $page): bool => filled(data_get($page, 'instagram_business_account.id')));
+        try {
+            $profile = $graph->getAuthenticatedUser($accessToken);
+        } catch (RequestException $exception) {
+            Log::warning('Instagram profile fetch failed after OAuth.', [
+                'message' => $exception->getMessage(),
+            ]);
 
-        abort_unless($page, 422, 'Aucune Page Facebook liée à un compte Instagram professionnel n’a été trouvée.');
+            return redirect()
+                ->route($indexRoute)
+                ->with('error', 'Connexion refusée ou compte non professionnel. Convertissez votre compte en Business ou Creator sur Instagram, puis réessayez.');
+        }
 
-        $pageAccessToken = $page['access_token'] ?? $accessToken;
-        $instagramBusinessAccountId = data_get($page, 'instagram_business_account.id');
+        $instagramUserId = (string) ($profile['user_id'] ?? $profile['id'] ?? $shortLivedTokenResponse['user_id'] ?? '');
 
-        abort_unless($instagramBusinessAccountId, 422, 'Le compte Instagram professionnel lié est introuvable.');
-
-        $profile = $graph->getInstagramAccount($instagramBusinessAccountId, $pageAccessToken);
+        abort_unless($instagramUserId !== '', 422, 'Identifiant du compte Instagram introuvable.');
 
         $account = InstagramAccount::query()->updateOrCreate(
-            ['business_account_id' => $instagramBusinessAccountId],
+            ['business_account_id' => $instagramUserId],
             [
-                'user_id' => Auth::id(),
-                'page_id' => $page['id'] ?? null,
-                'page_name' => $page['name'] ?? null,
-                'username' => $profile['username'] ?? data_get($page, 'instagram_business_account.username'),
+                'user_id' => $userId,
+                'page_id' => null,
+                'page_name' => null,
+                'username' => $profile['username'] ?? null,
                 'name' => $profile['name'] ?? null,
                 'biography' => $profile['biography'] ?? null,
                 'website' => $profile['website'] ?? null,
                 'profile_picture_url' => $profile['profile_picture_url'] ?? null,
-                'access_token' => $pageAccessToken,
+                'access_token' => $accessToken,
+                'token_expires_at' => filled($expiresIn) ? now()->addSeconds((int) $expiresIn) : null,
                 'followers_count' => (int) ($profile['followers_count'] ?? 0),
                 'follows_count' => (int) ($profile['follows_count'] ?? 0),
                 'media_count' => (int) ($profile['media_count'] ?? 0),
@@ -91,10 +124,27 @@ class InstagramOAuthController extends Controller
             ]);
         }
 
-        session()->forget('instagram_oauth_state');
-
         return redirect()
-            ->route('filament.admin.resources.instagram-accounts.index')
+            ->route($indexRoute)
             ->with('success', 'Compte Instagram connecté et synchronisé.');
+    }
+
+    private function resolveOAuthUserId(string $state): int
+    {
+        try {
+            $payload = Crypt::decrypt($state);
+        } catch (DecryptException) {
+            abort(403, 'État OAuth invalide.');
+        }
+
+        abort_unless(
+            is_array($payload)
+            && filled($payload['nonce'] ?? null)
+            && filled($payload['user_id'] ?? null),
+            403,
+            'État OAuth invalide.',
+        );
+
+        return (int) $payload['user_id'];
     }
 }

@@ -12,7 +12,7 @@ Route::middleware('throttle:api')->group(function () {
 Route::middleware('auth')->group(function (): void {
     Route::get('/instagram/connect', [InstagramOAuthController::class, 'redirect'])
         ->name('instagram.oauth.redirect');
-
-    Route::get('/instagram/callback', [InstagramOAuthController::class, 'callback'])
-        ->name('instagram.oauth.callback');
 });
+
+Route::get('/instagram/callback', [InstagramOAuthController::class, 'callback'])
+    ->name('instagram.oauth.callback');

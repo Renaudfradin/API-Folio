@@ -15,7 +15,30 @@ class InstagramGraphService
 
     public function baseUrl(): string
     {
-        return sprintf('https://graph.facebook.com/%s', $this->version());
+        return sprintf('%s/%s', config('services.instagram.graph_host', 'https://graph.instagram.com'), $this->version());
+    }
+
+    /**
+     * @return string|null Message d’erreur en français si la config OAuth est invalide.
+     */
+    public function oauthConfigurationError(): ?string
+    {
+        if (! filled(config('services.instagram.client_id')) || ! filled(config('services.instagram.client_secret'))) {
+            return 'Instagram OAuth non configuré : renseignez INSTAGRAM_APP_ID et INSTAGRAM_APP_SECRET (section Business login du dashboard Meta).';
+        }
+
+        if (! filled(config('services.instagram.redirect_uri'))) {
+            return 'INSTAGRAM_REDIRECT_URI est manquant.';
+        }
+
+        $metaAppId = env('META_APP_ID');
+        $clientId = (string) config('services.instagram.client_id');
+
+        if (filled($metaAppId) && $clientId === (string) $metaAppId) {
+            return 'INSTAGRAM_APP_ID semble être l’App ID Facebook (META_APP_ID). Utilisez l’Instagram App ID affiché dans Business login settings.';
+        }
+
+        return null;
     }
 
     public function buildOAuthUrl(string $state): string
@@ -28,7 +51,7 @@ class InstagramGraphService
             'state' => $state,
         ]);
 
-        return 'https://www.facebook.com/'.$this->version().'/dialog/oauth?'.$query;
+        return 'https://www.instagram.com/oauth/authorize?'.$query;
     }
 
     /**
@@ -38,12 +61,19 @@ class InstagramGraphService
      */
     public function exchangeCodeForAccessToken(string $code): array
     {
-        return $this->request('get', '/oauth/access_token', [
-            'client_id' => config('services.instagram.client_id'),
-            'client_secret' => config('services.instagram.client_secret'),
-            'redirect_uri' => config('services.instagram.redirect_uri'),
-            'code' => $code,
-        ]);
+        $response = Http::retry(3, 300)
+            ->asForm()
+            ->acceptJson()
+            ->post('https://api.instagram.com/oauth/access_token', [
+                'client_id' => config('services.instagram.client_id'),
+                'client_secret' => config('services.instagram.client_secret'),
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => config('services.instagram.redirect_uri'),
+                'code' => $code,
+            ])
+            ->throw();
+
+        return $response->json() ?? [];
     }
 
     /**
@@ -53,27 +83,29 @@ class InstagramGraphService
      */
     public function exchangeForLongLivedToken(string $shortLivedToken): array
     {
-        return $this->request('get', '/oauth/access_token', [
-            'grant_type' => 'fb_exchange_token',
-            'client_id' => config('services.instagram.client_id'),
-            'client_secret' => config('services.instagram.client_secret'),
-            'fb_exchange_token' => $shortLivedToken,
-        ]);
+        $response = Http::retry(3, 300)
+            ->acceptJson()
+            ->get(sprintf('%s/access_token', config('services.instagram.graph_host', 'https://graph.instagram.com')), [
+                'grant_type' => 'ig_exchange_token',
+                'client_secret' => config('services.instagram.client_secret'),
+                'access_token' => $shortLivedToken,
+            ])
+            ->throw();
+
+        return $response->json() ?? [];
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return array<string, mixed>
      *
      * @throws ConnectionException|RequestException
      */
-    public function getPages(string $accessToken): array
+    public function getAuthenticatedUser(string $accessToken): array
     {
-        $response = $this->request('get', '/me/accounts', [
-            'fields' => 'id,name,access_token,instagram_business_account{id,username}',
+        return $this->request('get', '/me', [
+            'fields' => 'user_id,username,name,biography,website,profile_picture_url,followers_count,follows_count,media_count',
             'access_token' => $accessToken,
         ]);
-
-        return $response['data'] ?? [];
     }
 
     /**

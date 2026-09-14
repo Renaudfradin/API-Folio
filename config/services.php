@@ -59,11 +59,13 @@ return [
     ],
 
     'instagram' => [
-        'client_id' => env('INSTAGRAM_CLIENT_ID', env('META_APP_ID')),
-        'client_secret' => env('INSTAGRAM_CLIENT_SECRET', env('META_APP_SECRET')),
+        // Instagram App ID / secret (Business login settings), pas l’App ID Facebook général.
+        'client_id' => env('INSTAGRAM_APP_ID', env('INSTAGRAM_CLIENT_ID')),
+        'client_secret' => env('INSTAGRAM_APP_SECRET', env('INSTAGRAM_CLIENT_SECRET')),
         'redirect_uri' => env('INSTAGRAM_REDIRECT_URI'),
         'graph_version' => env('INSTAGRAM_GRAPH_VERSION', 'v25.0'),
-        'scopes' => array_filter(array_map('trim', explode(',', env('INSTAGRAM_SCOPES', 'instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement')))),
+        'graph_host' => rtrim(env('INSTAGRAM_GRAPH_HOST', 'https://graph.instagram.com'), '/'),
+        'scopes' => array_filter(array_map('trim', explode(',', env('INSTAGRAM_SCOPES', 'instagram_business_basic,instagram_business_manage_insights')))),
     ],
 
 ];

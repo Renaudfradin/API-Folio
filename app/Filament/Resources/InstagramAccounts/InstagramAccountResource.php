@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\InstagramAccounts;
 
-use App\Filament\Resources\InstagramAccounts\Pages\CreateInstagramAccount;
 use App\Filament\Resources\InstagramAccounts\Pages\EditInstagramAccount;
 use App\Filament\Resources\InstagramAccounts\Pages\ListInstagramAccounts;
 use App\Filament\Resources\InstagramAccounts\Pages\ViewInstagramAccount;
@@ -30,6 +29,11 @@ class InstagramAccountResource extends Resource
     public static function canViewAny(): bool
     {
         return self::isCurrentUserAdmin();
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function getNavigationLabel(): string
@@ -66,7 +70,6 @@ class InstagramAccountResource extends Resource
     {
         return [
             'index' => ListInstagramAccounts::route('/'),
-            'create' => CreateInstagramAccount::route('/create'),
             'view' => ViewInstagramAccount::route('/{record}'),
             'edit' => EditInstagramAccount::route('/{record}/edit'),
         ];

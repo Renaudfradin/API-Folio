@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\InstagramAccounts\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -14,58 +13,48 @@ class InstagramAccountForm
     {
         return $schema
             ->components([
-                Hidden::make('user_id')
-                    ->default(fn () => auth()->id()),
-                TextInput::make('page_id')
-                    ->label('Facebook Page ID')
-                    ->maxLength(255),
-                TextInput::make('page_name')
-                    ->label('Facebook Page')
-                    ->maxLength(255),
-                TextInput::make('business_account_id')
-                    ->label('Instagram Business Account ID')
-                    ->required()
-                    ->maxLength(255),
                 TextInput::make('username')
                     ->label('Username')
-                    ->maxLength(255),
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('name')
                     ->label('Nom')
-                    ->maxLength(255),
+                    ->disabled()
+                    ->dehydrated(false),
+                TextInput::make('business_account_id')
+                    ->label('Instagram user ID')
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('biography')
                     ->label('Bio')
+                    ->disabled()
+                    ->dehydrated(false)
                     ->columnSpanFull(),
                 TextInput::make('website')
                     ->label('Site web')
-                    ->url()
-                    ->maxLength(255),
-                TextInput::make('profile_picture_url')
-                    ->label('Photo de profil')
-                    ->url()
-                    ->maxLength(255),
-                TextInput::make('access_token')
-                    ->label('Access token')
-                    ->password()
-                    ->revealable()
-                    ->required(fn (string $operation): bool => $operation === 'create')
-                    ->maxLength(65535),
+                    ->disabled()
+                    ->dehydrated(false),
                 DateTimePicker::make('token_expires_at')
-                    ->label('Expiration du token'),
+                    ->label('Expiration du token')
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('followers_count')
                     ->label('Followers')
                     ->numeric()
-                    ->default(0),
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('follows_count')
                     ->label('Following')
                     ->numeric()
-                    ->default(0),
+                    ->disabled()
+                    ->dehydrated(false),
                 TextInput::make('media_count')
                     ->label('Nombre de posts')
                     ->numeric()
-                    ->default(0),
+                    ->disabled()
+                    ->dehydrated(false),
                 Toggle::make('is_active')
-                    ->label('Actif')
-                    ->default(true),
+                    ->label('Actif'),
             ]);
     }
 }
