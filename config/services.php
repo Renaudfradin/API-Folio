@@ -65,7 +65,7 @@ return [
         'redirect_uri' => env('INSTAGRAM_REDIRECT_URI'),
         'graph_version' => env('INSTAGRAM_GRAPH_VERSION', 'v25.0'),
         'graph_host' => rtrim(env('INSTAGRAM_GRAPH_HOST', 'https://graph.instagram.com'), '/'),
-        'scopes' => array_filter(array_map('trim', explode(',', env('INSTAGRAM_SCOPES', 'instagram_business_basic,instagram_business_manage_insights')))),
+        'scopes' => array_filter(array_map('trim', explode(',', env('INSTAGRAM_SCOPES', 'instagram_business_basic,instagram_business_manage_insights,instagram_business_manage_comments')))),
     ],
 
 ];

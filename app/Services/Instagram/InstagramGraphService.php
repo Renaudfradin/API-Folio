@@ -165,6 +165,61 @@ class InstagramGraphService
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getMediaChildren(string $mediaId, string $accessToken): array
+    {
+        $response = $this->request('get', '/'.$mediaId.'/children', [
+            'fields' => 'id,media_type,media_url,thumbnail_url',
+            'access_token' => $accessToken,
+        ]);
+
+        return $response['data'] ?? [];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getMediaComments(string $mediaId, string $accessToken, int $limit = 100): array
+    {
+        $comments = [];
+        $after = null;
+
+        while (count($comments) < $limit) {
+            $query = [
+                'fields' => 'id,text,timestamp,username,like_count',
+                'limit' => min(50, $limit - count($comments)),
+                'access_token' => $accessToken,
+            ];
+
+            if ($after !== null) {
+                $query['after'] = $after;
+            }
+
+            $response = $this->request('get', '/'.$mediaId.'/comments', $query);
+            $page = $response['data'] ?? [];
+
+            if ($page === []) {
+                break;
+            }
+
+            $comments = array_merge($comments, $page);
+
+            $after = $response['paging']['cursors']['after'] ?? null;
+
+            if (! filled($after)) {
+                break;
+            }
+        }
+
+        return array_slice($comments, 0, $limit);
+    }
+
+    /**
      * @return array<string, mixed>
      *
      * @throws ConnectionException|RequestException

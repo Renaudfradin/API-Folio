@@ -4,7 +4,6 @@ namespace App\Services\Instagram;
 
 use App\Models\InstagramAccount;
 use App\Models\InstagramMedia;
-use App\Models\InstagramSyncRun;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Throwable;
@@ -13,8 +12,7 @@ class InstagramSyncService
 {
     public function __construct(
         protected InstagramGraphService $graph,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<int, InstagramAccount>
@@ -73,6 +71,9 @@ class InstagramSyncService
 
                 $mediaInsights = $this->normalizeInsights($mediaInsightsPayload);
 
+                $children = $this->syncMediaChildren($mediaItem, $account->access_token);
+                $comments = $this->syncMediaComments($mediaItem['id'], $account->access_token);
+
                 InstagramMedia::query()->updateOrCreate(
                     ['media_id' => $mediaItem['id']],
                     [
@@ -89,6 +90,8 @@ class InstagramSyncService
                         'timestamp' => isset($mediaItem['timestamp']) ? Carbon::parse($mediaItem['timestamp']) : null,
                         'insights' => $mediaInsights,
                         'raw_data' => $mediaItem,
+                        'children' => $children,
+                        'comments' => $comments,
                         'synced_at' => now(),
                     ]
                 );
@@ -155,6 +158,78 @@ class InstagramSyncService
 
                 return [$item['name'] => $value];
             })
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>  $mediaItem
+     * @return array<int, array<string, mixed>>
+     */
+    protected function syncMediaChildren(array $mediaItem, string $accessToken): array
+    {
+        if (($mediaItem['media_type'] ?? null) !== 'CAROUSEL_ALBUM') {
+            return [];
+        }
+
+        try {
+            $children = $this->graph->getMediaChildren($mediaItem['id'], $accessToken);
+        } catch (Throwable) {
+            return [];
+        }
+
+        return $this->normalizeMediaChildren($children);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function syncMediaComments(string $mediaId, string $accessToken): array
+    {
+        try {
+            $comments = $this->graph->getMediaComments($mediaId, $accessToken);
+        } catch (Throwable) {
+            return [];
+        }
+
+        return $this->normalizeMediaComments($comments);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $children
+     * @return array<int, array<string, mixed>>
+     */
+    public function normalizeMediaChildren(array $children): array
+    {
+        return collect($children)
+            ->map(fn (array $child): array => [
+                'id' => $child['id'] ?? null,
+                'media_type' => $child['media_type'] ?? null,
+                'media_url' => $child['media_url'] ?? null,
+                'thumbnail_url' => $child['thumbnail_url'] ?? null,
+            ])
+            ->filter(fn (array $child): bool => filled($child['media_url']) || filled($child['thumbnail_url']))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $comments
+     * @return array<int, array<string, mixed>>
+     */
+    public function normalizeMediaComments(array $comments): array
+    {
+        return collect($comments)
+            ->map(fn (array $comment): array => [
+                'id' => $comment['id'] ?? null,
+                'username' => $comment['username'] ?? null,
+                'text' => $comment['text'] ?? null,
+                'like_count' => (int) ($comment['like_count'] ?? 0),
+                'timestamp' => isset($comment['timestamp'])
+                    ? Carbon::parse($comment['timestamp'])->toIso8601String()
+                    : null,
+            ])
+            ->filter(fn (array $comment): bool => filled($comment['text']))
+            ->values()
             ->all();
     }
 }
