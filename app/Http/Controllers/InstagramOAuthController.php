@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filament\Pages\InstagramDashboard;
 use App\Models\InstagramAccount;
 use App\Services\Instagram\InstagramGraphService;
 use App\Services\Instagram\InstagramSyncService;
@@ -17,13 +18,17 @@ use Throwable;
 
 class InstagramOAuthController extends Controller
 {
+    private function dashboardRedirect(): RedirectResponse
+    {
+        return redirect(InstagramDashboard::getUrl());
+    }
+
     public function redirect(InstagramGraphService $graph): RedirectResponse
     {
         $configurationError = $graph->oauthConfigurationError();
 
         if ($configurationError !== null) {
-            return redirect()
-                ->route('filament.admin.resources.instagram-accounts.index')
+            return $this->dashboardRedirect()
                 ->with('error', $configurationError);
         }
 
@@ -40,11 +45,8 @@ class InstagramOAuthController extends Controller
         InstagramGraphService $graph,
         InstagramSyncService $syncService,
     ): RedirectResponse {
-        $indexRoute = 'filament.admin.resources.instagram-accounts.index';
-
         if ($request->filled('error')) {
-            return redirect()
-                ->route($indexRoute)
+            return $this->dashboardRedirect()
                 ->with('error', $request->string('error_description')->toString() ?: 'Connexion Instagram annulée.');
         }
 
@@ -59,8 +61,7 @@ class InstagramOAuthController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            return redirect()
-                ->route($indexRoute)
+            return $this->dashboardRedirect()
                 ->with('error', 'Impossible d’échanger le code Instagram. Vérifiez l’URI de redirection et les identifiants Meta.');
         }
 
@@ -85,8 +86,7 @@ class InstagramOAuthController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            return redirect()
-                ->route($indexRoute)
+            return $this->dashboardRedirect()
                 ->with('error', 'Connexion refusée ou compte non professionnel. Convertissez votre compte en Business ou Creator sur Instagram, puis réessayez.');
         }
 
@@ -124,8 +124,7 @@ class InstagramOAuthController extends Controller
             ]);
         }
 
-        return redirect()
-            ->route($indexRoute)
+        return $this->dashboardRedirect()
             ->with('success', 'Compte Instagram connecté et synchronisé.');
     }
 

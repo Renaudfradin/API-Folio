@@ -38,3 +38,20 @@ it('normalizes media comments payload', function (): void {
         ->and($normalized[0]['username'])->toBe('fan')
         ->and($normalized[0]['text'])->toBe('Super photo');
 });
+
+it('normalizes media comments payload with from.username', function (): void {
+    $service = app(InstagramSyncService::class);
+
+    $normalized = $service->normalizeMediaComments([
+        [
+            'id' => '101',
+            'from' => ['id' => '1', 'username' => 'fan_from'],
+            'text' => 'Hello',
+            'like_count' => 0,
+            'timestamp' => '2026-01-15T10:00:00+0000',
+        ],
+    ]);
+
+    expect($normalized)->toHaveCount(1)
+        ->and($normalized[0]['username'])->toBe('fan_from');
+});

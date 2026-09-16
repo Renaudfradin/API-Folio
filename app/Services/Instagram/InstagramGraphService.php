@@ -188,10 +188,11 @@ class InstagramGraphService
     {
         $comments = [];
         $after = null;
+        $commentFields = 'id,text,timestamp,like_count,username,from';
 
         while (count($comments) < $limit) {
             $query = [
-                'fields' => 'id,text,timestamp,username,like_count',
+                'fields' => $commentFields,
                 'limit' => min(50, $limit - count($comments)),
                 'access_token' => $accessToken,
             ];
@@ -217,6 +218,23 @@ class InstagramGraphService
         }
 
         return array_slice($comments, 0, $limit);
+    }
+
+    /**
+     * Fallback when the /comments edge returns an empty list (known Meta API quirk).
+     *
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getMediaCommentsFromMediaNode(string $mediaId, string $accessToken, int $limit = 100): array
+    {
+        $response = $this->request('get', '/'.$mediaId, [
+            'fields' => 'comments.limit('.$limit.'){id,text,timestamp,like_count,username,from}',
+            'access_token' => $accessToken,
+        ]);
+
+        return $response['comments']['data'] ?? [];
     }
 
     /**

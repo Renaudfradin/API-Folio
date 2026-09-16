@@ -46,9 +46,19 @@ class InstagramMediaInfolist
                     ])
                     ->columnSpanFull(),
                 Section::make('Commentaires')
-                    ->description(fn (InstagramMedia $record): string => $record->comments_count > 0
-                        ? (string) count($record->comments ?? []).' commentaire(s) synchronisé(s) sur '.$record->comments_count
-                        : 'Aucun commentaire sur ce post.')
+                    ->description(function (InstagramMedia $record): string {
+                        $syncedCount = count($record->comments ?? []);
+
+                        if ($record->comments_count === 0) {
+                            return 'Aucun commentaire sur ce post.';
+                        }
+
+                        if ($syncedCount === 0) {
+                            return $record->comments_count.' commentaire(s) sur Instagram, mais l’API n’en a renvoyé aucun. Reconnectez le compte (permission commentaires) puis resynchronisez. Consultez storage/logs/laravel.log si le problème persiste.';
+                        }
+
+                        return $syncedCount.' commentaire(s) synchronisé(s) sur '.$record->comments_count;
+                    })
                     ->schema([
                         RepeatableEntry::make('comments')
                             ->label('Liste')

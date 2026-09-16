@@ -6,6 +6,7 @@ use App\Models\InstagramAccount;
 use App\Models\InstagramMedia;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class InstagramSyncService
@@ -72,7 +73,11 @@ class InstagramSyncService
                 $mediaInsights = $this->normalizeInsights($mediaInsightsPayload);
 
                 $children = $this->syncMediaChildren($mediaItem, $account->access_token);
-                $comments = $this->syncMediaComments($mediaItem['id'], $account->access_token);
+                $comments = $this->syncMediaComments(
+                    $mediaItem['id'],
+                    $account->access_token,
+                    (int) ($mediaItem['comments_count'] ?? 0),
+                );
 
                 InstagramMedia::query()->updateOrCreate(
                     ['media_id' => $mediaItem['id']],
@@ -183,15 +188,40 @@ class InstagramSyncService
     /**
      * @return array<int, array<string, mixed>>
      */
-    protected function syncMediaComments(string $mediaId, string $accessToken): array
+    protected function syncMediaComments(string $mediaId, string $accessToken, int $commentsCount = 0): array
     {
+        $rawComments = [];
+
         try {
-            $comments = $this->graph->getMediaComments($mediaId, $accessToken);
-        } catch (Throwable) {
-            return [];
+            $rawComments = $this->graph->getMediaComments($mediaId, $accessToken);
+        } catch (Throwable $throwable) {
+            Log::warning('Instagram comments edge request failed.', [
+                'media_id' => $mediaId,
+                'message' => $throwable->getMessage(),
+            ]);
         }
 
-        return $this->normalizeMediaComments($comments);
+        if ($rawComments === []) {
+            try {
+                $rawComments = $this->graph->getMediaCommentsFromMediaNode($mediaId, $accessToken);
+            } catch (Throwable $throwable) {
+                Log::warning('Instagram nested comments request failed.', [
+                    'media_id' => $mediaId,
+                    'message' => $throwable->getMessage(),
+                ]);
+            }
+        }
+
+        $comments = $this->normalizeMediaComments($rawComments);
+
+        if ($commentsCount > 0 && $comments === []) {
+            Log::warning('Instagram API returned no comments despite comments_count.', [
+                'media_id' => $mediaId,
+                'comments_count' => $commentsCount,
+            ]);
+        }
+
+        return $comments;
     }
 
     /**
@@ -221,7 +251,9 @@ class InstagramSyncService
         return collect($comments)
             ->map(fn (array $comment): array => [
                 'id' => $comment['id'] ?? null,
-                'username' => $comment['username'] ?? null,
+                'username' => $comment['username']
+                    ?? Arr::get($comment, 'from.username')
+                    ?? (is_array($comment['from'] ?? null) ? ($comment['from']['username'] ?? null) : null),
                 'text' => $comment['text'] ?? null,
                 'like_count' => (int) ($comment['like_count'] ?? 0),
                 'timestamp' => isset($comment['timestamp'])

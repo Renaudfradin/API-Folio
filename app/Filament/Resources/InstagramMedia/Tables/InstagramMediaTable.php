@@ -8,7 +8,6 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 
@@ -74,18 +73,6 @@ class InstagramMediaTable
                     ->label('Publié le')
                     ->dateTime()
                     ->sortable(),
-            ])
-            ->filters([
-                SelectFilter::make('instagram_account_id')
-                    ->label('Compte')
-                    ->relationship('account', 'username'),
-                SelectFilter::make('media_type')
-                    ->label('Type')
-                    ->options(fn (): array => InstagramMedia::query()
-                        ->distinct()
-                        ->orderBy('media_type')
-                        ->pluck('media_type', 'media_type')
-                        ->all()),
             ])
             ->recordActions([
                 ActionGroup::make([

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\InstagramAccounts;
 
 use App\Filament\Resources\InstagramAccounts\Pages\EditInstagramAccount;
-use App\Filament\Resources\InstagramAccounts\Pages\ListInstagramAccounts;
 use App\Filament\Resources\InstagramAccounts\Pages\ViewInstagramAccount;
 use App\Filament\Resources\InstagramAccounts\Schemas\InstagramAccountForm;
 use App\Filament\Resources\InstagramAccounts\Schemas\InstagramAccountInfolist;
@@ -19,6 +18,8 @@ class InstagramAccountResource extends Resource
     use HasRoleBasedVisibility;
 
     protected static ?string $model = InstagramAccount::class;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-photo';
 
@@ -69,7 +70,6 @@ class InstagramAccountResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListInstagramAccounts::route('/'),
             'view' => ViewInstagramAccount::route('/{record}'),
             'edit' => EditInstagramAccount::route('/{record}/edit'),
         ];
