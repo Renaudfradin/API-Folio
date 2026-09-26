@@ -152,16 +152,204 @@ class InstagramGraphService
     }
 
     /**
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getStories(string $businessAccountId, string $accessToken): array
+    {
+        $query = [
+            'fields' => 'id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count',
+            'access_token' => $accessToken,
+        ];
+
+        $stories = $this->fetchStoriesPage($businessAccountId, $query);
+
+        if ($stories === []) {
+            return [];
+        }
+
+        if (isset($stories[0]['media_url']) || isset($stories[0]['timestamp'])) {
+            return collect($stories)
+                ->map(function (array $story): array {
+                    $story['media_product_type'] = $story['media_product_type'] ?? 'STORY';
+
+                    return $story;
+                })
+                ->all();
+        }
+
+        $enriched = [];
+
+        foreach ($stories as $story) {
+            $storyId = $story['id'] ?? null;
+
+            if (! filled($storyId)) {
+                continue;
+            }
+
+            try {
+                $node = $this->getMediaNode((string) $storyId, $accessToken);
+                $node['media_product_type'] = $node['media_product_type'] ?? 'STORY';
+                $enriched[] = $node;
+            } catch (RequestException|ConnectionException) {
+                $story['media_product_type'] = $story['media_product_type'] ?? 'STORY';
+                $enriched[] = $story;
+            }
+        }
+
+        return $enriched;
+    }
+
+    /**
+     * @param  array<string, mixed>  $query
+     * @return array<int, array<string, mixed>>
+     */
+    protected function fetchStoriesPage(string $businessAccountId, array $query): array
+    {
+        foreach ([$this->baseUrl(), $this->facebookBaseUrl()] as $host) {
+            try {
+                $response = Http::retry(2, 300)
+                    ->acceptJson()
+                    ->get(rtrim($host, '/').'/'.$businessAccountId.'/stories', $query)
+                    ->throw();
+
+                $stories = $response->json('data') ?? [];
+
+                if ($stories !== []) {
+                    return $stories;
+                }
+            } catch (RequestException|ConnectionException) {
+                continue;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getMediaNode(string $mediaId, string $accessToken): array
+    {
+        return $this->requestGraph('get', '/'.$mediaId, [
+            'fields' => 'id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count',
+            'access_token' => $accessToken,
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getStoryInsights(string $mediaId, string $accessToken): array
+    {
+        $dataByName = [];
+
+        foreach (['views,reach,replies,likes', 'views,reach,replies', 'views,reach', 'views'] as $metrics) {
+            try {
+                $response = $this->requestGraph('get', '/'.$mediaId.'/insights', [
+                    'metric' => $metrics,
+                    'access_token' => $accessToken,
+                ]);
+
+                foreach ($response['data'] ?? [] as $item) {
+                    $name = $item['name'] ?? null;
+
+                    if (filled($name) && ! isset($dataByName[$name])) {
+                        $dataByName[$name] = $item;
+                    }
+                }
+            } catch (RequestException|ConnectionException) {
+                continue;
+            }
+        }
+
+        if ($dataByName === []) {
+            return [];
+        }
+
+        return ['data' => array_values($dataByName)];
+    }
+
+    public function facebookBaseUrl(): string
+    {
+        return sprintf('https://graph.facebook.com/%s', $this->version());
+    }
+
+    /**
      * @return array<string, mixed>
      *
      * @throws ConnectionException|RequestException
      */
     public function getMediaInsights(string $mediaId, string $accessToken): array
     {
-        return $this->request('get', '/'.$mediaId.'/insights', [
-            'metric' => 'impressions,reach,engagement,saved,views',
-            'access_token' => $accessToken,
-        ]);
+        $dataByName = [];
+
+        foreach (['views,reach,shares,saved,follows', 'views,shares,saved,follows', 'views', 'reach', 'shares', 'saved', 'follows'] as $metrics) {
+            try {
+                $response = $this->request('get', '/'.$mediaId.'/insights', [
+                    'metric' => $metrics,
+                    'access_token' => $accessToken,
+                ]);
+
+                foreach ($response['data'] ?? [] as $item) {
+                    $name = $item['name'] ?? null;
+
+                    if (filled($name) && ! isset($dataByName[$name])) {
+                        $dataByName[$name] = $item;
+                    }
+                }
+            } catch (RequestException|ConnectionException) {
+                continue;
+            }
+        }
+
+        if (! isset($dataByName['shares']) || ! isset($dataByName['saved'])) {
+            $dataByName = $this->mergeMediaEngagementFieldsFromNode($mediaId, $accessToken, $dataByName);
+        }
+
+        if ($dataByName === []) {
+            return [];
+        }
+
+        return ['data' => array_values($dataByName)];
+    }
+
+    /**
+     * @param  array<string, array<string, mixed>>  $dataByName
+     * @return array<string, array<string, mixed>>
+     */
+    protected function mergeMediaEngagementFieldsFromNode(
+        string $mediaId,
+        string $accessToken,
+        array $dataByName,
+    ): array {
+        try {
+            $node = $this->request('get', '/'.$mediaId, [
+                'fields' => 'shares_count,saved_count',
+                'access_token' => $accessToken,
+            ]);
+        } catch (RequestException|ConnectionException) {
+            return $dataByName;
+        }
+
+        if (! isset($dataByName['shares']) && isset($node['shares_count'])) {
+            $dataByName['shares'] = [
+                'name' => 'shares',
+                'values' => [['value' => (int) $node['shares_count']]],
+            ];
+        }
+
+        if (! isset($dataByName['saved']) && isset($node['saved_count'])) {
+            $dataByName['saved'] = [
+                'name' => 'saved',
+                'values' => [['value' => (int) $node['saved_count']]],
+            ];
+        }
+
+        return $dataByName;
     }
 
     /**
@@ -181,27 +369,135 @@ class InstagramGraphService
 
     /**
      * @return array<int, array<string, mixed>>
-     *
-     * @throws ConnectionException|RequestException
      */
     public function getMediaComments(string $mediaId, string $accessToken, int $limit = 100): array
     {
+        $fieldVariants = [
+            null,
+            'id,text,timestamp,like_count,from',
+            'id,text,timestamp,like_count,username,from',
+        ];
+
+        foreach ($fieldVariants as $fields) {
+            $comments = $this->paginateCommentsEdge($mediaId, $accessToken, $limit, $fields, useBearer: true);
+
+            if ($comments !== []) {
+                return $this->enrichCommentsWithReplies($comments, $accessToken, $limit);
+            }
+
+            $comments = $this->paginateCommentsEdge($mediaId, $accessToken, $limit, $fields, useBearer: false);
+
+            if ($comments !== []) {
+                return $this->enrichCommentsWithReplies($comments, $accessToken, $limit);
+            }
+        }
+
+        $facebookComments = $this->getMediaCommentsViaFacebookGraph($mediaId, $accessToken, $limit);
+
+        if ($facebookComments !== []) {
+            return $this->enrichCommentsWithReplies($facebookComments, $accessToken, $limit);
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getMediaCommentsViaFacebookGraph(string $mediaId, string $accessToken, int $limit = 100): array
+    {
+        try {
+            $response = Http::retry(2, 300)
+                ->acceptJson()
+                ->get(sprintf('https://graph.facebook.com/%s/%s/comments', $this->version(), $mediaId), [
+                    'fields' => 'id,text,timestamp,like_count,from,username',
+                    'limit' => min(50, $limit),
+                    'access_token' => $accessToken,
+                ])
+                ->throw();
+
+            return $response->json('data') ?? [];
+        } catch (RequestException|ConnectionException) {
+            return [];
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getMediaCommentsFromMediaNode(string $mediaId, string $accessToken, int $limit = 100): array
+    {
+        $fieldVariants = [
+            'comments.limit('.$limit.'){id,text,timestamp,like_count,from}',
+            'comments.limit('.$limit.'){id,text,timestamp,like_count,username,from}',
+        ];
+
+        foreach ($fieldVariants as $fields) {
+            $response = $this->request('get', '/'.$mediaId, [
+                'fields' => $fields,
+                'access_token' => $accessToken,
+            ]);
+
+            $comments = $response['comments']['data'] ?? [];
+
+            if ($comments !== []) {
+                return $this->enrichCommentsWithReplies($comments, $accessToken, $limit);
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getCommentReplies(string $commentId, string $accessToken, int $limit = 50): array
+    {
+        $response = $this->request('get', '/'.$commentId.'/replies', [
+            'fields' => 'id,text,timestamp,like_count,username,from',
+            'limit' => min(50, $limit),
+            'access_token' => $accessToken,
+        ]);
+
+        return $response['data'] ?? [];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function paginateCommentsEdge(
+        string $mediaId,
+        string $accessToken,
+        int $limit,
+        ?string $fields,
+        bool $useBearer,
+    ): array {
         $comments = [];
         $after = null;
-        $commentFields = 'id,text,timestamp,like_count,username,from';
 
         while (count($comments) < $limit) {
             $query = [
-                'fields' => $commentFields,
                 'limit' => min(50, $limit - count($comments)),
-                'access_token' => $accessToken,
             ];
+
+            if ($fields !== null) {
+                $query['fields'] = $fields;
+            }
 
             if ($after !== null) {
                 $query['after'] = $after;
             }
 
-            $response = $this->request('get', '/'.$mediaId.'/comments', $query);
+            try {
+                $response = $this->requestComments('get', '/'.$mediaId.'/comments', $query, $accessToken, $useBearer);
+            } catch (RequestException|ConnectionException) {
+                break;
+            }
+
             $page = $response['data'] ?? [];
 
             if ($page === []) {
@@ -221,20 +517,85 @@ class InstagramGraphService
     }
 
     /**
-     * Fallback when the /comments edge returns an empty list (known Meta API quirk).
-     *
+     * @param  array<int, array<string, mixed>>  $comments
      * @return array<int, array<string, mixed>>
+     */
+    protected function enrichCommentsWithReplies(array $comments, string $accessToken, int $limit): array
+    {
+        $enriched = [];
+
+        foreach (array_slice($comments, 0, $limit) as $comment) {
+            if (! isset($comment['replies']) && filled($comment['id'] ?? null)) {
+                try {
+                    $comment['replies'] = [
+                        'data' => $this->getCommentReplies((string) $comment['id'], $accessToken),
+                    ];
+                } catch (RequestException|ConnectionException) {
+                    $comment['replies'] = ['data' => []];
+                }
+            }
+
+            $enriched[] = $comment;
+        }
+
+        return $enriched;
+    }
+
+    /**
+     * @return array<string, mixed>
      *
      * @throws ConnectionException|RequestException
      */
-    public function getMediaCommentsFromMediaNode(string $mediaId, string $accessToken, int $limit = 100): array
-    {
-        $response = $this->request('get', '/'.$mediaId, [
-            'fields' => 'comments.limit('.$limit.'){id,text,timestamp,like_count,username,from}',
-            'access_token' => $accessToken,
-        ]);
+    protected function requestComments(
+        string $method,
+        string $uri,
+        array $query,
+        string $accessToken,
+        bool $useBearer,
+    ): array {
+        if ($useBearer) {
+            $response = Http::retry(3, 300)
+                ->acceptJson()
+                ->withToken($accessToken)
+                ->{$method}($this->baseUrl().$uri, $query)
+                ->throw();
 
-        return $response['comments']['data'] ?? [];
+            return $response->json() ?? [];
+        }
+
+        $query['access_token'] = $accessToken;
+
+        return $this->request($method, $uri, $query);
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function subscribeAccountToCommentWebhooks(string $businessAccountId, string $accessToken): void
+    {
+        Http::retry(2, 300)
+            ->acceptJson()
+            ->post($this->baseUrl().'/'.$businessAccountId.'/subscribed_apps', [
+                'subscribed_fields' => 'comments,story_insights',
+                'access_token' => $accessToken,
+            ])
+            ->throw();
+    }
+
+    public function postCommentReply(string $commentId, string $message, string $accessToken): array
+    {
+        $response = Http::retry(3, 300)
+            ->acceptJson()
+            ->asForm()
+            ->post($this->baseUrl().'/'.$commentId.'/replies', [
+                'message' => $message,
+                'access_token' => $accessToken,
+            ])
+            ->throw();
+
+        return $response->json() ?? [];
     }
 
     /**
@@ -250,5 +611,24 @@ class InstagramGraphService
             ->throw();
 
         return $response->json() ?? [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws ConnectionException|RequestException
+     */
+    private function requestGraph(string $method, string $uri, array $query = []): array
+    {
+        try {
+            return $this->request($method, $uri, $query);
+        } catch (RequestException|ConnectionException $instagramException) {
+            $response = Http::retry(2, 300)
+                ->acceptJson()
+                ->{$method}($this->facebookBaseUrl().$uri, $query)
+                ->throw();
+
+            return $response->json() ?? [];
+        }
     }
 }

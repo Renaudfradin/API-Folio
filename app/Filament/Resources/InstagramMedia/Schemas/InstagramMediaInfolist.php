@@ -3,11 +3,14 @@
 namespace App\Filament\Resources\InstagramMedia\Schemas;
 
 use App\Models\InstagramMedia;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
+use Illuminate\View\ComponentAttributeBag;
+
+use function Filament\Support\generate_icon_html;
 
 class InstagramMediaInfolist
 {
@@ -26,7 +29,7 @@ class InstagramMediaInfolist
                     ->columns(1)
                     ->columnSpanFull(),
                 Section::make('Médias')
-                    ->description('Faites défiler les images et vidéos du post (carrousel inclus).')
+                    ->description('Cadre 4:5 dans la section — flèches gauche/droite, plein écran (F).')
                     ->schema([
                         ViewEntry::make('media_slider')
                             ->hiddenLabel()
@@ -46,38 +49,15 @@ class InstagramMediaInfolist
                     ])
                     ->columnSpanFull(),
                 Section::make('Commentaires')
-                    ->description(function (InstagramMedia $record): string {
-                        $syncedCount = count($record->comments ?? []);
-
-                        if ($record->comments_count === 0) {
-                            return 'Aucun commentaire sur ce post.';
-                        }
-
-                        if ($syncedCount === 0) {
-                            return $record->comments_count.' commentaire(s) sur Instagram, mais l’API n’en a renvoyé aucun. Reconnectez le compte (permission commentaires) puis resynchronisez. Consultez storage/logs/laravel.log si le problème persiste.';
-                        }
-
-                        return $syncedCount.' commentaire(s) synchronisé(s) sur '.$record->comments_count;
-                    })
+                    ->description('Consultez et répondez aux commentaires Instagram (style fil de discussion).')
+                    ->visible(fn (InstagramMedia $record): bool => ! $record->isStory())
                     ->schema([
-                        RepeatableEntry::make('comments')
-                            ->label('Liste')
-                            ->schema([
-                                TextEntry::make('username')
-                                    ->label('Auteur')
-                                    ->formatStateUsing(fn (?string $state): string => filled($state) ? '@'.$state : '-'),
-                                TextEntry::make('like_count')
-                                    ->label('Likes'),
-                                TextEntry::make('timestamp')
-                                    ->label('Publié le')
-                                    ->dateTime()
-                                    ->placeholder('-'),
-                                TextEntry::make('text')
-                                    ->label('Commentaire')
-                                    ->columnSpanFull(),
+                        ViewEntry::make('comments_panel')
+                            ->hiddenLabel()
+                            ->view('filament.infolists.instagram-media-comments')
+                            ->viewData(fn (InstagramMedia $record): array => [
+                                'recordId' => $record->id,
                             ])
-                            ->columns(3)
-                            ->placeholder('Relancez une synchronisation du compte pour récupérer les commentaires.')
                             ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
@@ -109,35 +89,53 @@ class InstagramMediaInfolist
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
-                Section::make('Statistiques')
+                Section::make('Performances')
+                    ->visible(fn (InstagramMedia $record): bool => ! $record->isStory())
+                    ->description('Les « — » = métrique absente de l’API (resynchronisez le compte, permission instagram_business_manage_insights).')
                     ->schema([
-                        TextEntry::make('like_count')
-                            ->label('Likes'),
-                        TextEntry::make('comments_count')
-                            ->label('Commentaires'),
-                        TextEntry::make('view_count')
-                            ->label('Vues'),
-                        TextEntry::make('insights_impressions')
-                            ->label('Impressions')
-                            ->state(fn (InstagramMedia $record): mixed => $record->insight('impressions'))
-                            ->placeholder('-'),
-                        TextEntry::make('insights_reach')
-                            ->label('Portée')
-                            ->state(fn (InstagramMedia $record): mixed => $record->insight('reach'))
-                            ->placeholder('-'),
-                        TextEntry::make('insights_engagement')
-                            ->label('Engagement (API)')
-                            ->state(fn (InstagramMedia $record): mixed => $record->insight('engagement'))
-                            ->placeholder('-'),
-                        TextEntry::make('insights_saved')
-                            ->label('Enregistrements')
-                            ->state(fn (InstagramMedia $record): mixed => $record->insight('saved'))
-                            ->placeholder('-'),
-                        TextEntry::make('engagement_rate')
-                            ->label('Taux d’engagement')
-                            ->formatStateUsing(fn (?float $state): string => $state !== null ? $state.' %' : '-'),
+                        self::metricEntry(TextEntry::make('engagement_rate'), 'heroicon-o-presentation-chart-line', 'Taux d’eng.')
+                            ->formatStateUsing(fn (?float $state): string => $state !== null ? number_format($state, 0, ',', ' ').' %' : '—'),
+                        self::metricEntry(TextEntry::make('view_count'), 'heroicon-o-eye', 'Vues')
+                            ->state(fn (InstagramMedia $record): ?int => $record->hasSyncedViewCount() ? (int) $record->view_count : null)
+                            ->numeric()
+                            ->placeholder('—'),
+                        self::metricEntry(TextEntry::make('insights_shares'), 'heroicon-o-share', 'Partages')
+                            ->state(fn (InstagramMedia $record): ?int => $record->insightValue('shares'))
+                            ->numeric()
+                            ->placeholder('—'),
+                        self::metricEntry(TextEntry::make('insights_saved'), 'heroicon-o-bookmark', 'Enregistrements')
+                            ->state(fn (InstagramMedia $record): ?int => $record->insightValue('saved'))
+                            ->numeric()
+                            ->placeholder('—'),
+                        self::metricEntry(TextEntry::make('insights_follows'), 'heroicon-o-arrow-trending-up', 'Abonnements')
+                            ->state(fn (InstagramMedia $record): ?int => $record->insightValue('follows'))
+                            ->numeric()
+                            ->placeholder('—'),
+                        self::metricEntry(TextEntry::make('insights_reach'), 'heroicon-o-arrow-up', 'Portée')
+                            ->state(fn (InstagramMedia $record): ?int => $record->insightValue('reach'))
+                            ->numeric()
+                            ->placeholder('—'),
                     ])
-                    ->columns(4)
+                    ->columns(6)
+                    ->columnSpanFull(),
+                Section::make('Statistiques story')
+                    ->visible(fn (InstagramMedia $record): bool => $record->isStory())
+                    ->schema([
+                        self::metricEntry(TextEntry::make('view_count'), 'heroicon-o-eye', 'Vues')
+                            ->numeric(),
+                        self::metricEntry(TextEntry::make('insights_reach'), 'heroicon-o-arrow-up', 'Portée')
+                            ->state(fn (InstagramMedia $record): int => $record->insightCount('reach'))
+                            ->numeric(),
+                        self::metricEntry(TextEntry::make('story_replies'), 'heroicon-o-chat-bubble-left-right', 'Réponses')
+                            ->state(fn (InstagramMedia $record): int => $record->storyRepliesCount())
+                            ->numeric(),
+                        self::metricEntry(TextEntry::make('story_reactions'), 'heroicon-o-heart', 'Réactions')
+                            ->state(fn (InstagramMedia $record): int => $record->storyReactionsCount())
+                            ->numeric(),
+                        self::metricEntry(TextEntry::make('engagement_rate'), 'heroicon-o-presentation-chart-line', 'Taux d’eng.')
+                            ->formatStateUsing(fn (?float $state): string => $state !== null ? number_format($state, 0, ',', ' ').' %' : '—'),
+                    ])
+                    ->columns(5)
                     ->columnSpanFull(),
                 Section::make('Synchronisation')
                     ->schema([
@@ -157,5 +155,20 @@ class InstagramMediaInfolist
                     ->columns(3)
                     ->columnSpanFull(),
             ]);
+    }
+
+    protected static function metricEntry(TextEntry $entry, string $icon, string $label): TextEntry
+    {
+        $iconHtml = generate_icon_html($icon, attributes: new ComponentAttributeBag([
+            'class' => 'fi-icon',
+            'style' => 'display:inline-block;width:1rem;height:1rem;flex-shrink:0;vertical-align:middle;',
+        ]));
+
+        return $entry->label(new HtmlString(
+            '<span style="display:inline-flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:0.375rem;">'
+            .($iconHtml?->toHtml() ?? '')
+            .'<span>'.e($label).'</span>'
+            .'</span>'
+        ));
     }
 }

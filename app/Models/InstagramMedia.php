@@ -56,8 +56,71 @@ class InstagramMedia extends Model
         return data_get($this->insights, $key, $default);
     }
 
+    public function insightCount(string $key): int
+    {
+        $value = $this->insightValue($key);
+
+        return $value ?? 0;
+    }
+
+    public function insightValue(string $key): ?int
+    {
+        if (! array_key_exists($key, $this->insights ?? [])) {
+            return null;
+        }
+
+        $value = $this->insight($key);
+
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+    public function hasSyncedViewCount(): bool
+    {
+        return array_key_exists('views', $this->insights ?? []) || (int) $this->view_count > 0;
+    }
+
+    public function isStory(): bool
+    {
+        return strtoupper((string) $this->media_product_type) === 'STORY';
+    }
+
+    public function storyReactionsCount(): int
+    {
+        return $this->insightCount('reactions') ?: (int) $this->like_count;
+    }
+
+    public function storyRepliesCount(): int
+    {
+        return $this->insightCount('replies') ?: (int) $this->comments_count;
+    }
+
     public function getEngagementRateAttribute(): ?float
     {
+        if ($this->isStory()) {
+            $reach = $this->insightCount('reach');
+            $interactions = $this->storyReactionsCount() + $this->storyRepliesCount();
+
+            if ($reach > 0) {
+                return round(($interactions / $reach) * 100, 0);
+            }
+
+            $views = (int) $this->view_count;
+
+            if ($views > 0) {
+                return round(($interactions / $views) * 100, 0);
+            }
+
+            return null;
+        }
+
+        $views = (int) $this->view_count;
+
+        if ($views > 0) {
+            $interactions = (int) $this->like_count + (int) $this->comments_count;
+
+            return round(($interactions / $views) * 100, 0);
+        }
+
         $followers = (int) ($this->account?->followers_count ?? 0);
 
         if ($followers <= 0) {

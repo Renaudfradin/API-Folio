@@ -25,11 +25,36 @@ it('reads insight values from json', function (): void {
         ->and($media->insight('missing', 'n/a'))->toBe('n/a');
 });
 
-it('computes engagement rate from account followers', function (): void {
+it('computes story engagement rate from reach and interactions', function (): void {
+    $media = new InstagramMedia([
+        'media_product_type' => 'STORY',
+        'like_count' => 6,
+        'comments_count' => 0,
+        'view_count' => 99,
+        'insights' => ['reach' => 55, 'replies' => 0, 'reactions' => 6],
+    ]);
+
+    expect($media->isStory())->toBeTrue()
+        ->and($media->engagement_rate)->toBe(11.0);
+});
+
+it('computes engagement rate from views when available', function (): void {
+    $media = new InstagramMedia([
+        'like_count' => 100,
+        'comments_count' => 50,
+        'view_count' => 923,
+        'insights' => ['shares' => 3, 'saved' => 1],
+    ]);
+
+    expect($media->engagement_rate)->toBe(16.0);
+});
+
+it('computes engagement rate from account followers when views are zero', function (): void {
     $account = new InstagramAccount(['followers_count' => 1000]);
     $media = new InstagramMedia([
         'like_count' => 100,
         'comments_count' => 50,
+        'view_count' => 0,
     ]);
     $media->setRelation('account', $account);
 
@@ -40,10 +65,22 @@ it('returns null engagement rate without followers', function (): void {
     $media = new InstagramMedia([
         'like_count' => 10,
         'comments_count' => 5,
+        'view_count' => 0,
     ]);
     $media->setRelation('account', new InstagramAccount(['followers_count' => 0]));
 
     expect($media->engagement_rate)->toBeNull();
+});
+
+it('reads insight counts for performance metrics', function (): void {
+    $media = new InstagramMedia([
+        'insights' => ['shares' => 3, 'saved' => 1, 'follows' => 2],
+    ]);
+
+    expect($media->insightCount('shares'))->toBe(3)
+        ->and($media->insightCount('saved'))->toBe(1)
+        ->and($media->insightCount('follows'))->toBe(2)
+        ->and($media->insightValue('reach'))->toBeNull();
 });
 
 it('returns carousel children as all media items', function (): void {

@@ -37,6 +37,10 @@ class InstagramRecentPostsTable extends TableWidget
                 TextColumn::make('media_type')
                     ->label('Type')
                     ->badge(),
+                TextColumn::make('media_product_type')
+                    ->label('Produit')
+                    ->badge()
+                    ->placeholder('-'),
                 TextColumn::make('caption')
                     ->label('Légende')
                     ->limit(50)
@@ -60,7 +64,7 @@ class InstagramRecentPostsTable extends TableWidget
                     ->url(fn (InstagramMedia $record): string => InstagramMediaResource::getUrl('view', ['record' => $record])),
             ])
             ->emptyStateHeading('Aucune publication')
-            ->emptyStateDescription('Synchronise le compte pour importer les posts Instagram.');
+            ->emptyStateDescription('Synchronise le compte ou importe un CSV de stories (compte Instagram → Importer des stories). Les stories actives durent ~24 h via l’API ; l’historique passe par l’import CSV.');
     }
 
     protected function getTableQuery(): Builder

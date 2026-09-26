@@ -66,6 +66,7 @@ return [
         'graph_version' => env('INSTAGRAM_GRAPH_VERSION', 'v25.0'),
         'graph_host' => rtrim(env('INSTAGRAM_GRAPH_HOST', 'https://graph.instagram.com'), '/'),
         'scopes' => array_filter(array_map('trim', explode(',', env('INSTAGRAM_SCOPES', 'instagram_business_basic,instagram_business_manage_insights,instagram_business_manage_comments')))),
+        'webhook_verify_token' => env('INSTAGRAM_WEBHOOK_VERIFY_TOKEN'),
     ],
 
 ];

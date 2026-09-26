@@ -33,17 +33,17 @@ class InstagramMediaResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Instagram posts';
+        return 'Médias Instagram';
     }
 
     public static function getModelLabel(): string
     {
-        return 'Post Instagram';
+        return 'Média Instagram';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Posts Instagram';
+        return 'Médias Instagram';
     }
 
     public static function infolist(Schema $schema): Schema

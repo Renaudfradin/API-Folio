@@ -116,6 +116,15 @@ class InstagramOAuthController extends Controller
         );
 
         try {
+            $graph->subscribeAccountToCommentWebhooks($account->business_account_id, $accessToken);
+        } catch (Throwable $throwable) {
+            Log::warning('Instagram webhook subscription failed after OAuth connection.', [
+                'instagram_account_id' => $account->id,
+                'message' => $throwable->getMessage(),
+            ]);
+        }
+
+        try {
             $syncService->syncAccount($account);
         } catch (Throwable $throwable) {
             Log::warning('Instagram sync failed after OAuth connection.', [
