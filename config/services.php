@@ -72,7 +72,8 @@ return [
         'client_id' => env('LINKEDIN_CLIENT_ID'),
         'client_secret' => env('LINKEDIN_CLIENT_SECRET'),
         'redirect' => env('LINKEDIN_REDIRECT_URI'),
-        'scopes' => env('LINKEDIN_SCOPES', 'openid profile email'),
+        'api_version' => env('LINKEDIN_API_VERSION', '202405'),
+        'scopes' => array_filter(array_map('trim', explode(',', env('LINKEDIN_SCOPES', 'openid,profile,email,w_member_social,r_member_postAnalytics,r_member_profileAnalytics,rw_organization_admin,r_organization_social,w_organization_social,r_organization_followers')))),
     ],
 
 ];

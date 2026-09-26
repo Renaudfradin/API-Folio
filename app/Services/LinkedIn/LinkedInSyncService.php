@@ -6,26 +6,19 @@ use App\Models\LinkedinConnection;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use RuntimeException;
+use Throwable;
 
 class LinkedInSyncService
 {
-    private const AUTHORIZATION_ENDPOINT = 'https://www.linkedin.com/oauth/v2/authorization';
     private const TOKEN_ENDPOINT = 'https://www.linkedin.com/oauth/v2/accessToken';
     private const USERINFO_ENDPOINT = 'https://api.linkedin.com/v2/userinfo';
 
-    public function authorizationUrl(string $state): string
-    {
-        $query = http_build_query([
-            'response_type' => 'code',
-            'client_id' => config('services.linkedin.client_id'),
-            'redirect_uri' => $this->redirectUri(),
-            'state' => $state,
-            'scope' => config('services.linkedin.scopes', 'openid profile email'),
-        ]);
-
-        return self::AUTHORIZATION_ENDPOINT.'?'.$query;
-    }
+    public function __construct(
+        private readonly LinkedInOAuthService $oauth,
+        private readonly LinkedInApiClient $apiClient,
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -91,18 +84,80 @@ class LinkedInSyncService
             throw new RuntimeException('Aucune connexion LinkedIn n’est configurée.');
         }
 
+        return $this->syncConnection($connection);
+    }
+
+    public function syncConnection(LinkedinConnection $connection): LinkedinConnection
+    {
+        $user = $connection->user;
+
+        if (! $user instanceof User) {
+            throw new RuntimeException('Utilisateur LinkedIn introuvable.');
+        }
+
+        $connection = $this->ensureValidToken($connection, $user);
+
+        $errors = [];
+        $profileSynced = false;
+
+        try {
+            $profileData = $this->fetchUserInfo($connection->access_token);
+            $connection = $this->persistConnection($user, $connection, [], $profileData);
+            $profileSynced = true;
+        } catch (Throwable $throwable) {
+            $errors[] = $throwable->getMessage();
+        }
+
+        try {
+            $followers = $this->apiClient->fetchMemberFollowersCount($connection);
+
+            if ($followers !== null) {
+                $connection->forceFill(['followers_count' => $followers])->save();
+            }
+        } catch (Throwable $throwable) {
+            $errors[] = $throwable->getMessage();
+        }
+
+        try {
+            $this->apiClient->syncMemberPosts($connection);
+        } catch (Throwable $throwable) {
+            $errors[] = $throwable->getMessage();
+        }
+
+        $status = $profileSynced ? 'ok' : 'failed';
+        $errorMessage = $errors === [] ? null : Str::limit(implode(' · ', array_unique($errors)), 500);
+
+        $connection->forceFill([
+            'last_synced_at' => now(),
+            'last_synced_status' => $status,
+            'last_synced_error' => $errorMessage,
+        ])->save();
+
+        $user->forceFill(['linkedin_synced_at' => now()])->save();
+
+        return $connection->refresh();
+    }
+
+    public function syncAllActive(): void
+    {
+        LinkedinConnection::query()
+            ->whereNotNull('access_token')
+            ->each(fn (LinkedinConnection $connection) => $this->syncConnection($connection));
+    }
+
+    protected function ensureValidToken(LinkedinConnection $connection, User $user): LinkedinConnection
+    {
         if ($connection->expires_at && $connection->expires_at->isPast()) {
             $tokenData = $this->refreshAccessToken($connection);
-            $connection = $this->persistConnection($user, $connection, $tokenData, $connection->raw_profile ?? []);
+
+            return $this->persistConnection($user, $connection, $tokenData, $connection->raw_profile ?? []);
         }
 
         if (! $connection->access_token) {
             throw new RuntimeException('Le token LinkedIn est manquant.');
         }
 
-        $profileData = $this->fetchUserInfo($connection->access_token);
-
-        return $this->persistConnection($user, $connection, [], $profileData);
+        return $connection;
     }
 
     public function disconnect(User $user): void
@@ -170,11 +225,11 @@ class LinkedInSyncService
             return preg_split('/\s+/', trim((string) $tokenData['scope'])) ?: [];
         }
 
-        return $connection?->scopes ?? array_filter(explode(' ', (string) config('services.linkedin.scopes', 'openid profile email')));
+        return $connection?->scopes ?? $this->oauth->configuredScopes();
     }
 
     private function redirectUri(): string
     {
-        return config('services.linkedin.redirect') ?: route('linkedin.callback');
+        return $this->oauth->redirectUri();
     }
 }

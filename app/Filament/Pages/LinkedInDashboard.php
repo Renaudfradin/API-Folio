@@ -2,16 +2,20 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\LinkedInImportedContentOverview;
-use App\Filament\Widgets\LinkedInSyncOverview;
+use App\Filament\Widgets\LinkedIn\LinkedInConnectionSnapshotOverview;
+use App\Filament\Widgets\LinkedIn\LinkedInPeriodStatsOverview;
+use App\Filament\Widgets\LinkedIn\LinkedInRecentPostsTable;
 use App\Models\LinkedinConnection;
 use App\Models\User;
+use App\Services\LinkedIn\LinkedInDashboardDateRange;
 use App\Services\LinkedIn\LinkedInSyncService;
 use App\Traits\HasRoleBasedVisibility;
 use BackedEnum;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Widgets\WidgetConfiguration;
 use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
@@ -21,15 +25,25 @@ class LinkedInDashboard extends Page
 
     protected static string|UnitEnum|null $navigationGroup = 'LinkedIn';
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-link';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar-square';
 
-    protected static ?string $navigationLabel = 'Synchronisation';
+    protected static ?string $navigationLabel = 'Tableau de bord';
+
+    protected static ?string $slug = 'linkedin-dashboard';
+
+    protected static ?string $title = 'LinkedIn';
+
+    protected static ?int $navigationSort = -2;
 
     protected string $view = 'filament.pages.linkedin-dashboard';
 
-    protected ?string $heading = 'Synchronisation LinkedIn';
+    protected ?string $heading = 'Tableau de bord LinkedIn';
 
-    public ?LinkedinConnection $connection = null;
+    protected ?string $subheading = 'Statistiques du profil et performances des publications';
+
+    public ?int $linkedinConnectionId = null;
+
+    public string $period = '30d';
 
     public static function canAccess(): bool
     {
@@ -38,7 +52,70 @@ class LinkedInDashboard extends Page
 
     public function mount(): void
     {
-        $this->refreshConnection();
+        if (session()->has('error')) {
+            Notification::make()
+                ->title((string) session('error'))
+                ->danger()
+                ->send();
+        }
+
+        if (session()->has('success')) {
+            Notification::make()
+                ->title((string) session('success'))
+                ->success()
+                ->send();
+        }
+
+        if ($this->linkedinConnectionId !== null) {
+            return;
+        }
+
+        $user = Auth::user();
+
+        if (! $user instanceof User) {
+            return;
+        }
+
+        $this->linkedinConnectionId = $user->linkedinConnection?->id;
+    }
+
+    public function getConnection(): ?LinkedinConnection
+    {
+        if ($this->linkedinConnectionId === null) {
+            return null;
+        }
+
+        return LinkedinConnection::query()->find($this->linkedinConnectionId);
+    }
+
+    /**
+     * @return array{
+     *     start: Carbon,
+     *     end: Carbon,
+     *     previousStart: Carbon,
+     *     previousEnd: Carbon,
+     *     label: string
+     * }
+     */
+    public function getDateRange(): array
+    {
+        return LinkedInDashboardDateRange::forPeriod($this->period);
+    }
+
+    public function updatedPeriod(): void
+    {
+        $this->broadcastDashboardFilters();
+    }
+
+    protected function broadcastDashboardFilters(): void
+    {
+        unset($this->cachedHeaderWidgetsSchemaComponents, $this->cachedFooterWidgetsSchemaComponents);
+
+        $this->dispatch(
+            'linkedin-dashboard-filters-updated',
+            connectionId: $this->linkedinConnectionId,
+            period: $this->period,
+        );
     }
 
     protected function getHeaderActions(): array
@@ -46,24 +123,31 @@ class LinkedInDashboard extends Page
         return [
             Action::make('connect')
                 ->label('Connecter LinkedIn')
-                ->icon('heroicon-o-arrow-top-right-on-square')
-                ->url(route('linkedin.redirect')),
+                ->icon('heroicon-o-link')
+                ->action(fn () => redirect()->route('linkedin.oauth.redirect')),
             Action::make('sync')
                 ->label('Synchroniser')
                 ->icon('heroicon-o-arrow-path')
-                ->visible(fn (): bool => filled($this->connection?->access_token))
+                ->requiresConfirmation()
+                ->visible(fn (): bool => filled($this->getConnection()?->access_token))
                 ->action(function (): void {
-                    $user = Auth::user();
+                    $connection = $this->getConnection();
 
-                    if (! $user instanceof User) {
+                    if ($connection === null) {
+                        app(LinkedInSyncService::class)->syncAllActive();
+
+                        Notification::make()
+                            ->title('Synchronisation lancée')
+                            ->success()
+                            ->send();
+
                         return;
                     }
 
-                    app(LinkedInSyncService::class)->syncCurrentUser($user);
-                    $this->refreshConnection();
+                    app(LinkedInSyncService::class)->syncConnection($connection);
 
                     Notification::make()
-                        ->title('Synchronisation terminée')
+                        ->title('Connexion synchronisée')
                         ->success()
                         ->send();
                 }),
@@ -71,7 +155,7 @@ class LinkedInDashboard extends Page
                 ->label('Déconnecter')
                 ->icon('heroicon-o-link-slash')
                 ->color('danger')
-                ->visible(fn (): bool => filled($this->connection))
+                ->visible(fn (): bool => filled($this->getConnection()))
                 ->requiresConfirmation()
                 ->action(function (): void {
                     $user = Auth::user();
@@ -81,7 +165,7 @@ class LinkedInDashboard extends Page
                     }
 
                     app(LinkedInSyncService::class)->disconnect($user);
-                    $this->refreshConnection();
+                    $this->linkedinConnectionId = null;
 
                     Notification::make()
                         ->title('Connexion LinkedIn supprimée')
@@ -91,20 +175,44 @@ class LinkedInDashboard extends Page
         ];
     }
 
+    /**
+     * @return array<class-string|WidgetConfiguration>
+     */
     protected function getHeaderWidgets(): array
     {
+        return [];
+    }
+
+    /**
+     * @return array<class-string|WidgetConfiguration>
+     */
+    protected function getFooterWidgets(): array
+    {
         return [
-            LinkedInSyncOverview::class,
-            LinkedInImportedContentOverview::class,
+            $this->makeWidgetConfiguration(LinkedInConnectionSnapshotOverview::class),
+            $this->makeWidgetConfiguration(LinkedInPeriodStatsOverview::class),
+            $this->makeWidgetConfiguration(LinkedInRecentPostsTable::class),
         ];
     }
 
-    public function refreshConnection(): void
+    public function getHeaderWidgetsColumns(): int|array
     {
-        $user = Auth::user();
+        return 4;
+    }
 
-        $this->connection = $user instanceof User
-            ? $user->linkedinConnection()->first()
-            : null;
+    public function getFooterWidgetsColumns(): int|array
+    {
+        return 4;
+    }
+
+    /**
+     * @param  class-string  $widget
+     */
+    protected function makeWidgetConfiguration(string $widget): WidgetConfiguration
+    {
+        return new WidgetConfiguration($widget, [
+            'linkedinConnectionId' => $this->linkedinConnectionId,
+            'period' => $this->period,
+        ]);
     }
 }

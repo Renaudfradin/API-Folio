@@ -19,9 +19,11 @@ Route::get('/instagram/callback', [InstagramOAuthController::class, 'callback'])
     ->name('instagram.oauth.callback');
 
 Route::middleware('auth')->group(function (): void {
+    Route::get('/linkedin/connect', [LinkedInAuthController::class, 'redirect'])
+        ->name('linkedin.oauth.redirect');
     Route::get('/linkedin/redirect', [LinkedInAuthController::class, 'redirect'])
         ->name('linkedin.redirect');
-
-    Route::get('/linkedin/callback', [LinkedInAuthController::class, 'callback'])
-        ->name('linkedin.callback');
 });
+
+Route::get('/linkedin/callback', [LinkedInAuthController::class, 'callback'])
+    ->name('linkedin.oauth.callback');
