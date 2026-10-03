@@ -24,6 +24,11 @@ trait HasRoleBasedVisibility
         return auth()->check() && auth()->user()->isPlatform();
     }
 
+    public static function isCurrentUserAdminOrDemo(): bool
+    {
+        return self::isCurrentUserAdmin() || self::isCurrentUserDemo();
+    }
+
     public static function visibleForAdmin(): \Closure
     {
         return fn () => self::isCurrentUserAdmin();
