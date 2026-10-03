@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\InstagramMedia\Schemas;
 
 use App\Models\InstagramMedia;
+use App\Traits\HasRoleBasedVisibility;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
@@ -14,6 +15,8 @@ use function Filament\Support\generate_icon_html;
 
 class InstagramMediaInfolist
 {
+    use HasRoleBasedVisibility;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -50,7 +53,7 @@ class InstagramMediaInfolist
                     ->columnSpanFull(),
                 Section::make('Commentaires')
                     ->description('Consultez et répondez aux commentaires Instagram (style fil de discussion).')
-                    ->visible(fn (InstagramMedia $record): bool => ! $record->isStory())
+                    ->visible(fn (InstagramMedia $record): bool => ! $record->isStory() && ! self::isCurrentUserDemo())
                     ->schema([
                         ViewEntry::make('comments_panel')
                             ->hiddenLabel()

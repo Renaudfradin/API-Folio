@@ -66,6 +66,10 @@ class InstagramMediaCommentsPanel extends Component
 
     public function refreshComments(InstagramSyncService $syncService): void
     {
+        if (auth()->user()?->isDemo()) {
+            return;
+        }
+
         try {
             $syncService->syncCommentsForMedia($this->media);
             unset($this->media, $this->comments, $this->repliedCount);
@@ -99,6 +103,10 @@ class InstagramMediaCommentsPanel extends Component
 
     public function sendReply(InstagramGraphService $graph, InstagramSyncService $syncService): void
     {
+        if (auth()->user()?->isDemo()) {
+            return;
+        }
+
         $message = trim($this->replyMessage);
 
         if ($this->replyingToCommentId === null || $message === '') {

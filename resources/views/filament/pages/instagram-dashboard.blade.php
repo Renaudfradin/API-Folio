@@ -13,18 +13,24 @@
                 </x-slot>
 
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Connecte un compte professionnel Instagram pour afficher les statistiques et les publications.
+                    @if (\App\Filament\Pages\InstagramDashboard::isCurrentUserDemo())
+                        Aucun compte Instagram n’est configuré pour la démo. Les statistiques s’afficheront lorsqu’un compte sera disponible.
+                    @else
+                        Connecte un compte professionnel Instagram pour afficher les statistiques et les publications.
+                    @endif
                 </p>
 
-                <div class="mt-4">
-                    <x-filament::button
-                        tag="a"
-                        href="{{ route('instagram.oauth.redirect') }}"
-                        icon="heroicon-o-link"
-                    >
-                        Connecter Instagram
-                    </x-filament::button>
-                </div>
+                @unless (\App\Filament\Pages\InstagramDashboard::isCurrentUserDemo())
+                    <div class="mt-4">
+                        <x-filament::button
+                            tag="a"
+                            href="{{ route('instagram.oauth.redirect') }}"
+                            icon="heroicon-o-link"
+                        >
+                            Connecter Instagram
+                        </x-filament::button>
+                    </div>
+                @endunless
             </x-filament::section>
         @else
             <style>

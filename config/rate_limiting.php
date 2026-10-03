@@ -12,14 +12,14 @@ return [
     */
 
     'api' => [
-        'limit' => 60,
+        'limit' => (int) env('RATE_LIMIT_API', 60),
     ],
 
     'strict' => [
-        'limit' => 20,
+        'limit' => (int) env('RATE_LIMIT_STRICT', 20),
     ],
 
     'login' => [
-        'limit' => 5,
+        'limit' => (int) env('RATE_LIMIT_LOGIN', 5),
     ],
 ];

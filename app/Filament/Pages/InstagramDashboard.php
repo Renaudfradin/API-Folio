@@ -47,7 +47,7 @@ class InstagramDashboard extends Page
 
     public static function canAccess(): bool
     {
-        return self::isCurrentUserAdmin();
+        return self::isCurrentUserAdminOrDemo();
     }
 
     public function mount(): void
@@ -134,35 +134,39 @@ class InstagramDashboard extends Page
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('connect')
-                ->label('Connecter Instagram')
-                ->icon('heroicon-o-link')
-                ->action(fn () => redirect()->route('instagram.oauth.redirect')),
-            Action::make('sync')
-                ->label('Synchroniser')
-                ->icon('heroicon-o-arrow-path')
-                ->requiresConfirmation()
-                ->action(function (): void {
-                    $account = $this->getAccount();
+            self::applyAdminVisibility(
+                Action::make('connect')
+                    ->label('Connecter Instagram')
+                    ->icon('heroicon-o-link')
+                    ->action(fn () => redirect()->route('instagram.oauth.redirect')),
+            ),
+            self::applyAdminVisibility(
+                Action::make('sync')
+                    ->label('Synchroniser')
+                    ->icon('heroicon-o-arrow-path')
+                    ->requiresConfirmation()
+                    ->action(function (): void {
+                        $account = $this->getAccount();
 
-                    if ($account === null) {
-                        app(InstagramSyncService::class)->syncAllActive();
+                        if ($account === null) {
+                            app(InstagramSyncService::class)->syncAllActive();
+
+                            Notification::make()
+                                ->title('Synchronisation lancée')
+                                ->success()
+                                ->send();
+
+                            return;
+                        }
+
+                        app(InstagramSyncService::class)->syncAccount($account);
 
                         Notification::make()
-                            ->title('Synchronisation lancée')
+                            ->title('Compte synchronisé')
                             ->success()
                             ->send();
-
-                        return;
-                    }
-
-                    app(InstagramSyncService::class)->syncAccount($account);
-
-                    Notification::make()
-                        ->title('Compte synchronisé')
-                        ->success()
-                        ->send();
-                }),
+                    }),
+            ),
             Action::make('posts')
                 ->label('Posts')
                 ->icon('heroicon-o-photo')

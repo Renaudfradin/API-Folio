@@ -28,7 +28,7 @@ class InstagramMediaResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return self::isCurrentUserAdmin();
+        return self::isCurrentUserAdminOrDemo();
     }
 
     public static function getNavigationLabel(): string

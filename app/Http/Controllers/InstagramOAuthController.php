@@ -25,6 +25,11 @@ class InstagramOAuthController extends Controller
 
     public function redirect(InstagramGraphService $graph): RedirectResponse
     {
+        if (Auth::user()?->isDemo()) {
+            return $this->dashboardRedirect()
+                ->with('error', 'La connexion Instagram n’est pas disponible sur le compte démo.');
+        }
+
         $configurationError = $graph->oauthConfigurationError();
 
         if ($configurationError !== null) {
@@ -45,6 +50,11 @@ class InstagramOAuthController extends Controller
         InstagramGraphService $graph,
         InstagramSyncService $syncService,
     ): RedirectResponse {
+        if (Auth::user()?->isDemo()) {
+            return $this->dashboardRedirect()
+                ->with('error', 'La connexion Instagram n’est pas disponible sur le compte démo.');
+        }
+
         if ($request->filled('error')) {
             return $this->dashboardRedirect()
                 ->with('error', $request->string('error_description')->toString() ?: 'Connexion Instagram annulée.');

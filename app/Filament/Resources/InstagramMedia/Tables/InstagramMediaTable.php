@@ -42,11 +42,6 @@ class InstagramMediaTable
                     ->badge()
                     ->placeholder('-')
                     ->sortable(),
-                TextColumn::make('caption')
-                    ->label('Légende')
-                    ->limit(70)
-                    ->wrap()
-                    ->toggleable(),
                 TextColumn::make('like_count')
                     ->label('Likes / réactions')
                     ->state(fn (InstagramMedia $record): int => $record->isStory()

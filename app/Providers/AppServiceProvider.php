@@ -25,17 +25,30 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(config('rate_limiting.api.limit', 60))
-                ->by($request->ip());
+                ->by($request->ip())
+                ->response($this->tooManyRequestsResponse(...));
         });
 
         RateLimiter::for('strict', function (Request $request) {
             return Limit::perMinute(config('rate_limiting.strict.limit', 20))
-                ->by($request->ip());
+                ->by($request->ip())
+                ->response($this->tooManyRequestsResponse(...));
         });
 
         RateLimiter::for('login', function (Request $request) {
             return Limit::perMinute(config('rate_limiting.login.limit', 5))
-                ->by($request->ip());
+                ->by($request->ip())
+                ->response($this->tooManyRequestsResponse(...));
         });
+    }
+
+    /**
+     * @param  array<string, mixed>  $headers
+     */
+    protected function tooManyRequestsResponse(Request $request, array $headers): \Symfony\Component\HttpFoundation\Response
+    {
+        return response()->json([
+            'message' => 'Trop de requêtes. Veuillez réessayer plus tard.',
+        ], 429, $headers);
     }
 }
