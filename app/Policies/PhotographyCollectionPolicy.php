@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Photography;
+use App\Models\PhotographyCollection;
 use App\Models\User;
 use App\Traits\HasRoleBasedVisibility;
 
-class PhotographyPolicy
+class PhotographyCollectionPolicy
 {
     use HasRoleBasedVisibility;
 
@@ -15,7 +15,7 @@ class PhotographyPolicy
         return true;
     }
 
-    public function view(User $user, Photography $photography): bool
+    public function view(User $user, PhotographyCollection $photographyCollection): bool
     {
         return true;
     }
@@ -25,27 +25,22 @@ class PhotographyPolicy
         return self::isCurrentUserAdmin();
     }
 
-    public function update(User $user, Photography $photography): bool
+    public function update(User $user, PhotographyCollection $photographyCollection): bool
     {
         return self::isCurrentUserAdmin();
     }
 
-    public function delete(User $user, Photography $photography): bool
+    public function delete(User $user, PhotographyCollection $photographyCollection): bool
     {
         return self::isCurrentUserAdmin();
     }
 
-    public function restore(User $user, Photography $photography): bool
+    public function restore(User $user, PhotographyCollection $photographyCollection): bool
     {
         return self::isCurrentUserAdmin();
     }
 
-    public function forceDelete(User $user, Photography $photography): bool
-    {
-        return self::isCurrentUserAdmin();
-    }
-
-    public function reorder(User $user): bool
+    public function forceDelete(User $user, PhotographyCollection $photographyCollection): bool
     {
         return self::isCurrentUserAdmin();
     }
