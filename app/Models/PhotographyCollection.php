@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Photography extends Model
+class PhotographyCollection extends Model
 {
     use HasActiveRouteBinding;
     use HasFactory;
@@ -15,38 +15,29 @@ class Photography extends Model
     protected $fillable = [
         'name',
         'slug',
-        'image',
-        'date',
-        'series',
-        'city',
-        'camera_id',
+        'description',
         'active',
     ];
 
     protected $casts = [
-        'date' => 'datetime',
+        'active' => 'boolean',
     ];
 
-    public function camera()
-    {
-        return $this->belongsTo(Camera::class);
-    }
-
-    public function documents()
-    {
-        return $this->morphMany(Document::class, 'documentable');
-    }
-
-    public function photographyCollections(): BelongsToMany
+    public function photographies(): BelongsToMany
     {
         return $this->belongsToMany(
-            PhotographyCollection::class,
+            Photography::class,
             'photography_collection_photography',
         )
             ->using(PhotographyCollectionPhotography::class)
             ->withPivot('position')
             ->withTimestamps()
             ->orderByPivot('position');
+    }
+
+    public function activePhotographies(): BelongsToMany
+    {
+        return $this->photographies()->where('photographies.active', true);
     }
 
     public function scopeActive($query)
