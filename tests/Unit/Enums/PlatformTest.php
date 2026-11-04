@@ -18,6 +18,7 @@ class PlatformTest extends TestCase
             'JobupCh',
             'Mail',
             'PoleEmploi',
+            'FreeWork',
             'Other',
         ];
         $actualPlatforms = Platform::cases();

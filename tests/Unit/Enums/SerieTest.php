@@ -9,7 +9,7 @@ class SerieTest extends TestCase
 {
     public function test_serie_enum_has_expected_values()
     {
-        $expectedSeries = ['s110', 's35', 's120', 's24'];
+        $expectedSeries = ['s110', 's35', 's120', 's24', 'sNumerique'];
         $actualSeries = Serie::cases();
 
         $this->assertCount(count($expectedSeries), $actualSeries);
