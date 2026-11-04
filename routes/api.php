@@ -15,15 +15,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/health', function () {
+    $database = rescue(
+        fn () => DB::connection()->getPdo() ? 'connected' : 'disconnected',
+        'disconnected',
+        false,
+    );
+
+    $healthy = $database === 'connected';
+
     return response()->json([
-        'status' => 'healthy',
+        'status' => $healthy ? 'healthy' : 'unhealthy',
         'timestamp' => now()->toISOString(),
-        'database' => rescue(
-            fn () => DB::connection()->getPdo() ? 'connected' : 'disconnected',
-            'disconnected',
-            false,
-        ),
-    ]);
+        'database' => $database,
+    ], $healthy ? 200 : 503);
 });
 Route::get('/cameras', [CameraController::class, 'index']);
 Route::get('/camera/{camera:slug}', [CameraController::class, 'show']);
