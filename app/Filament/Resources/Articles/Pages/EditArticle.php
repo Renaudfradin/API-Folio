@@ -23,6 +23,7 @@ class EditArticle extends EditRecord
     {
         return [
             ArticleLocaleSwitcher::make(),
+            $this->translateArticleAction(),
             ViewAction::make(),
             DeleteAction::make(),
         ];

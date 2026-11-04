@@ -7,6 +7,7 @@ use App\Models\Category;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,9 +24,23 @@ class ArticleForm
         return $schema
             ->columns(3)
             ->components([
+                Placeholder::make('translation_progress')
+                    ->hiddenLabel()
+                    ->content('Le service choisi traduit l’article à partir du français. Reste sur cette page : le résultat s’affichera ici.')
+                    ->visible(fn (mixed $livewire): bool => is_object($livewire) && filled($livewire->translationAgentId ?? null))
+                    ->columnSpanFull(),
                 TextInput::make('title')
                     ->label('Titre')
                     ->live(onBlur: true)
+                    ->helperText(function (mixed $livewire): ?string {
+                        $locale = is_object($livewire) ? ($livewire->activeLocale ?? null) : null;
+
+                        if (! is_string($locale) || $locale === Article::DEFAULT_LOCALE) {
+                            return null;
+                        }
+
+                        return 'Les blocs français restent affichés. Le bouton Traduire les passe dans les autres langues.';
+                    })
                     ->afterStateUpdated(function (Set $set, ?string $state, mixed $livewire): void {
                         $locale = is_object($livewire) ? ($livewire->activeLocale ?? null) : null;
 

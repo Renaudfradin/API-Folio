@@ -19,6 +19,7 @@ class CreateArticle extends CreateRecord
     {
         return [
             ArticleLocaleSwitcher::make(),
+            $this->translateArticleAction(),
         ];
     }
 }
