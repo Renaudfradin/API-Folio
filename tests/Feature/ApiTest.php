@@ -129,6 +129,96 @@ it('lists only active articles and shows one by slug', function () {
     $this->getJson('/api/article/hidden-article')->assertNotFound();
 });
 
+it('returns the requested article language and falls back to french', function () {
+    Article::factory()->create([
+        'active' => true,
+        'slug' => 'minolta-x700',
+        'title' => [
+            'fr' => 'Minolta FR',
+            'en' => 'Minolta EN',
+            'ky' => 'Minolta KY',
+        ],
+        'content' => [
+            'fr' => [
+                'block-fr' => ['type' => 'paragraph', 'data' => ['content' => '<p>Bonjour</p>']],
+            ],
+            'en' => [
+                'block-en' => ['type' => 'paragraph', 'data' => ['content' => '<p>Hello</p>']],
+            ],
+            'ky' => [
+                'block-ky' => ['type' => 'paragraph', 'data' => ['content' => '<p>Салам</p>']],
+            ],
+        ],
+    ]);
+
+    $this->getJson('/api/articles')
+        ->assertOk()
+        ->assertJsonPath('data.0.lang', 'fr')
+        ->assertJsonPath('data.0.title', 'Minolta FR')
+        ->assertJsonPath('data.0.content.0.content', '<p>Bonjour</p>')
+        ->assertJsonPath('data.0.available_langs', ['fr', 'en', 'ky']);
+
+    $this->getJson('/api/articles?lang=en')
+        ->assertOk()
+        ->assertJsonPath('data.0.lang', 'en')
+        ->assertJsonPath('data.0.title', 'Minolta EN')
+        ->assertJsonPath('data.0.content.0.content', '<p>Hello</p>');
+
+    $this->getJson('/api/article/minolta-x700?lang=ky')
+        ->assertOk()
+        ->assertJsonPath('data.lang', 'ky')
+        ->assertJsonPath('data.title', 'Minolta KY')
+        ->assertJsonPath('data.content.0.content', '<p>Салам</p>');
+
+    $this->getJson('/api/article/minolta-x700?lang=de')
+        ->assertOk()
+        ->assertJsonPath('data.lang', 'fr')
+        ->assertJsonPath('data.title', 'Minolta FR')
+        ->assertJsonPath('data.content.0.content', '<p>Bonjour</p>');
+
+    $this->getJson('/api/article/minolta-x700?lang=it')
+        ->assertOk()
+        ->assertJsonPath('data.lang', 'fr')
+        ->assertJsonPath('data.title', 'Minolta FR');
+});
+
+it('counts one view and one completed read per visitor and language', function () {
+    Article::factory()->create([
+        'active' => true,
+        'slug' => 'read-me',
+        'title' => ['fr' => 'À lire'],
+    ]);
+    Article::factory()->create([
+        'active' => false,
+        'slug' => 'hidden-read',
+    ]);
+
+    $this->getJson('/api/article/read-me')->assertOk();
+    $this->getJson('/api/article/read-me')->assertOk();
+    $this->getJson('/api/article/read-me?lang=it')->assertOk();
+    $this->getJson('/api/article/read-me?lang=en')->assertOk();
+
+    $article = Article::query()->where('slug', 'read-me')->firstOrFail();
+
+    expect($article->readingStats()->where('locale', 'fr')->first()?->views_count)->toBe(1)
+        ->and($article->readingStats()->where('locale', 'en')->first()?->views_count)->toBe(1)
+        ->and($article->readingStats()->where('locale', 'en')->first()?->last_viewed_at)->not->toBeNull();
+
+    $this->postJson('/api/article/read-me/read')->assertNoContent();
+    $this->postJson('/api/article/read-me/read')->assertNoContent();
+    $this->postJson('/api/article/read-me/read?lang=ky')->assertNoContent();
+
+    $article->unsetRelation('readingStats');
+
+    expect($article->readingStats()->where('locale', 'fr')->first()?->reads_count)->toBe(1)
+        ->and($article->readingStats()->where('locale', 'fr')->first()?->last_read_at)->not->toBeNull()
+        ->and($article->readingStats()->where('locale', 'ky')->first()?->reads_count)->toBe(1);
+
+    $this->getJson('/api/article/hidden-read')->assertNotFound();
+    $this->postJson('/api/article/hidden-read/read')->assertNotFound();
+    expect($article->readingStats()->count())->toBe(3);
+});
+
 it('lists only active categories and shows one by slug', function () {
     Category::factory()->create(['active' => true, 'slug' => 'visible-category']);
     Category::factory()->create(['active' => false, 'slug' => 'hidden-category']);

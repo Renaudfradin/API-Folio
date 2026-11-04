@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\Articles\Schemas;
 
+use App\Models\Article;
 use App\Models\Category;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Set;
@@ -25,7 +26,15 @@ class ArticleForm
                 TextInput::make('title')
                     ->label('Titre')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->afterStateUpdated(function (Set $set, ?string $state, mixed $livewire): void {
+                        $locale = is_object($livewire) ? ($livewire->activeLocale ?? null) : null;
+
+                        if ($locale !== Article::DEFAULT_LOCALE) {
+                            return;
+                        }
+
+                        $set('slug', Str::slug((string) $state));
+                    })
                     ->required(),
                 TextInput::make('slug')
                     ->label('Slug')
@@ -59,9 +68,16 @@ class ArticleForm
                             ->label('Paragraphe')
                             ->icon(Heroicon::OutlinedBars3BottomLeft)
                             ->schema([
-                                Textarea::make('content')
+                                RichEditor::make('content')
                                     ->label('Paragraphe')
                                     ->required()
+                                    ->json(false)
+                                    ->fileAttachments(false)
+                                    ->toolbarButtons([
+                                        ['bold', 'italic', 'underline', 'link'],
+                                        ['h2', 'h3'],
+                                        ['bulletList', 'orderedList', 'blockquote'],
+                                    ])
                                     ->columnSpanFull(),
                             ]),
                         Block::make('image')

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec68f57cab6e03aac999ec0c5f21d9e6",
+    "content-hash": "c3612dc566a198dfa058c6fef006cfdf",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -6266,6 +6266,90 @@
                 }
             ],
             "time": "2026-09-28T07:16:50+00:00"
+        },
+        {
+            "name": "spatie/laravel-translatable",
+            "version": "6.15.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-translatable.git",
+                "reference": "7d7c3c8f7c67eb13ea4e961261dd7bfdd0cfa68e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-translatable/zipball/7d7c3c8f7c67eb13ea4e961261dd7bfdd0cfa68e",
+                "reference": "7d7c3c8f7c67eb13ea4e961261dd7bfdd0cfa68e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^12.0|^13.0",
+                "illuminate/support": "^12.0|^13.0",
+                "php": "^8.4",
+                "spatie/laravel-package-tools": "^1.93.0"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.32",
+                "mockery/mockery": "^1.6.12",
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^4.7|^5.3"
+            },
+            "type": "library",
+            "extra": {
+                "aliases": {
+                    "Translatable": "Spatie\\Translatable\\Facades\\Translatable"
+                },
+                "laravel": {
+                    "providers": [
+                        "Spatie\\Translatable\\TranslatableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Translatable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A trait to make an Eloquent model hold translations",
+            "homepage": "https://github.com/spatie/laravel-translatable",
+            "keywords": [
+                "eloquent",
+                "i8n",
+                "laravel-translatable",
+                "model",
+                "multilingual",
+                "spatie",
+                "translate"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/laravel-translatable/issues",
+                "source": "https://github.com/spatie/laravel-translatable/tree/6.15.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-10-19T00:09:37+00:00"
         },
         {
             "name": "spatie/shiki-php",
