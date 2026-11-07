@@ -48,6 +48,7 @@ it('has correct fillable fields', function () {
         'url_github',
         'stack',
         'active',
+        'position',
     ];
 
     expect($project->getFillable())->toBe($expectedFillable);

@@ -22,9 +22,9 @@ class ArticleFactory extends Factory
         $title = fake()->unique()->sentence(3);
 
         return [
-            'title' => $title,
+            'title' => ['fr' => $title],
             'slug' => Str::slug($title),
-            'content' => ['blocks' => []],
+            'content' => ['fr' => []],
             'active' => false,
             'category_id' => Category::factory(),
         ];

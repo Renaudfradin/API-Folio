@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -18,8 +19,17 @@ class ProjectsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('id', 'desc')
+            ->defaultSort('position')
+            ->reorderable('position')
+            ->reorderRecordsTriggerAction(
+                fn (Action $action, bool $isReordering): Action => $action
+                    ->button()
+                    ->label($isReordering ? 'Terminer' : 'Changer l’ordre'),
+            )
             ->columns([
+                TextColumn::make('position')
+                    ->label('Ordre')
+                    ->sortable(),
                 TextColumn::make('name')
                     ->label('Nom')
                     ->searchable()

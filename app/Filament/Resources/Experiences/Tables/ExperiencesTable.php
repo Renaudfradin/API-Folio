@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Experiences\Tables;
 
+use App\Models\Experience;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -43,6 +44,16 @@ class ExperiencesTable
                         'alternance' => 'Alternance',
                         'cdi' => 'CDI',
                     ]),
+
+                SelectFilter::make('company')
+                    ->label('Entreprise')
+                    ->options(fn (): array => Experience::query()
+                        ->whereNotNull('company')
+                        ->where('company', '!=', '')
+                        ->distinct()
+                        ->orderBy('company')
+                        ->pluck('company', 'company')
+                        ->all()),
 
                 SelectFilter::make('active')
                     ->options([

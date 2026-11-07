@@ -41,5 +41,6 @@ Route::get('/experiences', [ExperienceController::class, 'index']);
 Route::get('/experience/{experience:slug}', [ExperienceController::class, 'show']);
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/article/{article:slug}', [ArticleController::class, 'show']);
+Route::post('/article/{article:slug}/read', [ArticleController::class, 'read']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/category/{category:slug}', [CategoryController::class, 'show']);

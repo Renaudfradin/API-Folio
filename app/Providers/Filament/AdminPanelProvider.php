@@ -94,6 +94,9 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label(fn (): string => 'Options')
                     ->icon('heroicon-o-cog-6-tooth'),
+                NavigationGroup::make()
+                    ->label(fn (): string => 'Facturation')
+                    ->icon('heroicon-o-banknotes'),
             ])
             ->middleware([
                 EncryptCookies::class,

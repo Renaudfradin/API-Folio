@@ -21,11 +21,24 @@ class Project extends Model
         'url_github',
         'stack',
         'active',
+        'position',
     ];
 
     protected $casts = [
         'stack' => 'array',
+        'position' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Project $project): void {
+            if ((int) $project->position > 0) {
+                return;
+            }
+
+            $project->position = (int) static::query()->max('position') + 1;
+        });
+    }
 
     public function documents()
     {
@@ -35,5 +48,10 @@ class Project extends Model
     public function scopeActive($query)
     {
         return $query->where('active', true);
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('position')->orderBy('id');
     }
 }
