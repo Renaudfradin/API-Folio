@@ -15,11 +15,29 @@ Elle centralise la gestion des données et des fonctionnalités clés, et me ser
 
 <p>API et BackOffice pour Api-Folio</p>
 
-![home](public/img/home1.png)
-![article](public/img/home2.png)
-![article](public/img/home3.png)
-![article](public/img/home4.png)
-![article](public/img/home5.png)
+**Tableau de bord**
+
+![Tableau de bord](public/img/space-dashboard.png)
+
+**renaudfradin — projets**
+
+![Projets](public/img/space-projects.png)
+
+**renaudfradinphoto — photographies**
+
+![Photographies](public/img/space-photographies.png)
+
+**renaudfradinphoto — articles**
+
+![Articles](public/img/space-articles.png)
+
+**GitHub**
+
+![GitHub](public/img/space-github.png)
+
+**Instagram**
+
+![Instagram](public/img/space-instagram.png)
 
 ### 🛠 Installation & Set Up
 
