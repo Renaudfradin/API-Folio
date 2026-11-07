@@ -44,4 +44,9 @@ class ProjectPolicy
     {
         return self::isCurrentUserAdmin();
     }
+
+    public function reorder(User $user): bool
+    {
+        return self::isCurrentUserAdmin();
+    }
 }

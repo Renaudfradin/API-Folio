@@ -226,3 +226,20 @@ it('translates the french article into the other languages', function () {
         ->and(json_encode($article->getTranslation('content', 'en', false)))->toContain('h2')
         ->and($article->slug)->toBe('minolta-x700');
 });
+
+it('finds an article when the title search ignores case', function () {
+    $zenit = Article::factory()->create([
+        'title' => ['fr' => 'Zenit 12'],
+    ]);
+    $other = Article::factory()->create([
+        'title' => ['fr' => 'Minolta'],
+    ]);
+
+    Livewire::test(ListArticles::class)
+        ->searchTable('zenit')
+        ->assertCanSeeTableRecords([$zenit])
+        ->assertCanNotSeeTableRecords([$other])
+        ->searchTable('ZENIT')
+        ->assertCanSeeTableRecords([$zenit])
+        ->assertCanNotSeeTableRecords([$other]);
+});

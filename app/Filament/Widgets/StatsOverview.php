@@ -2,30 +2,60 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Article;
-use App\Models\Camera;
-use App\Models\Category;
-use App\Models\Document;
+use App\Filament\Resources\Employments\EmploymentResource;
+use App\Filament\Resources\Experiences\ExperienceResource;
+use App\Filament\Resources\Photographies\PhotographyResource;
+use App\Filament\Resources\Projects\ProjectResource;
 use App\Models\Employment;
 use App\Models\Experience;
 use App\Models\Photography;
 use App\Models\Project;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends StatsOverviewWidget
 {
-    protected function getStats(): array
+    protected ?string $pollingInterval = null;
+
+    protected ?string $heading = 'Aperçu';
+
+    protected ?string $description = 'Photographies, projets, expériences et candidatures';
+
+    protected function getColumns(): int|array|null
     {
         return [
-            Stat::make('Total Photography', Photography::count()),
-            Stat::make('Total Project', Project::count()),
-            Stat::make('Total Experience', Experience::count()),
-            Stat::make('Total Camera', Camera::count()),
-            Stat::make('Total Document', Document::count()),
-            Stat::make('Total Employment', Employment::count()),
-            Stat::make('Total Article', Article::count()),
-            Stat::make('Total Category', Category::count()),
+            'default' => 1,
+            'sm' => 2,
+            'xl' => 4,
+        ];
+    }
+
+    protected function getStats(): array
+    {
+        $canViewEmployments = EmploymentResource::canViewAny();
+        $pendingEmployments = Employment::query()->where('responce', 'pending')->count();
+
+        return [
+            Stat::make('Photographies', number_format(Photography::query()->count()))
+                ->description('Galerie')
+                ->icon(Heroicon::OutlinedPhoto)
+                ->url(PhotographyResource::getUrl()),
+            Stat::make('Projets', number_format(Project::query()->count()))
+                ->description('Portfolio')
+                ->icon(Heroicon::OutlinedRectangleStack)
+                ->url(ProjectResource::getUrl()),
+            Stat::make('Expériences', number_format(Experience::query()->count()))
+                ->description('Parcours')
+                ->icon(Heroicon::OutlinedBuildingOffice)
+                ->url(ExperienceResource::getUrl()),
+            Stat::make('Candidatures', number_format(Employment::query()->count()))
+                ->description($canViewEmployments ? number_format($pendingEmployments).' en attente' : 'Suivi des réponses')
+                ->descriptionIcon(Heroicon::OutlinedClock, IconPosition::Before)
+                ->descriptionColor($canViewEmployments && $pendingEmployments > 0 ? 'warning' : 'gray')
+                ->icon(Heroicon::OutlinedClipboardDocumentList)
+                ->url($canViewEmployments ? EmploymentResource::getUrl() : null),
         ];
     }
 }

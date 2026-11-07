@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class ArticlesTable
 {
@@ -30,9 +31,15 @@ class ArticlesTable
                 TextColumn::make('title')
                     ->label('Titre')
                     ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->where(function (Builder $query) use ($search): void {
+                        $pattern = '%'.Str::lower($search).'%';
+
+                        return $query->where(function (Builder $query) use ($pattern): void {
+                            $grammar = $query->getGrammar();
+
                             foreach (Article::LOCALES as $locale) {
-                                $query->orWhere("title->{$locale}", 'like', "%{$search}%");
+                                $column = $grammar->wrap("title->{$locale}");
+
+                                $query->orWhereRaw("lower({$column}) like ?", [$pattern]);
                             }
                         });
                     }),

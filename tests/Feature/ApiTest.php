@@ -68,6 +68,18 @@ it('lists only active projects and shows one by slug', function () {
     $this->getJson('/api/project/hidden-project')->assertNotFound();
 });
 
+it('lists active projects in the chosen order', function () {
+    Project::factory()->create(['active' => true, 'slug' => 'shown-last', 'position' => 2]);
+    Project::factory()->create(['active' => true, 'slug' => 'shown-first', 'position' => 1]);
+    Project::factory()->create(['active' => false, 'slug' => 'hidden-between', 'position' => 1]);
+
+    $this->getJson('/api/projects')
+        ->assertOk()
+        ->assertJsonCount(2, 'data')
+        ->assertJsonPath('data.0.slug', 'shown-first')
+        ->assertJsonPath('data.1.slug', 'shown-last');
+});
+
 it('lists only active photographies and shows one by slug', function () {
     $camera = Camera::factory()->create();
 
