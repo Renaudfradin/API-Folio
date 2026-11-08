@@ -58,6 +58,14 @@ return [
         ],
     ],
 
+    'cursor' => [
+        'api_key' => env('CURSOR_API_KEY'),
+        'base_url' => rtrim(env('CURSOR_API_URL', 'https://api.cursor.com'), '/'),
+        'translation_model' => env('CURSOR_TRANSLATION_MODEL', 'gpt-5.4-nano'),
+        'translation_timeout' => (int) env('CURSOR_TRANSLATION_TIMEOUT', 600),
+        'poll_interval' => (int) env('CURSOR_TRANSLATION_POLL_INTERVAL', 5),
+    ],
+
     'instagram' => [
         // Instagram App ID / secret (Business login settings), pas l’App ID Facebook général.
         'client_id' => env('INSTAGRAM_APP_ID', env('INSTAGRAM_CLIENT_ID')),

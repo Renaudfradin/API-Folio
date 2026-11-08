@@ -26,9 +26,14 @@ class BrunoSeeder extends Seeder
         Article::query()->updateOrCreate(
             ['slug' => 'bruno-test-article'],
             [
-                'title' => 'Bruno Test Article',
+                'title' => ['fr' => 'Bruno Test Article'],
                 'content' => [
-                    ['type' => 'paragraph', 'content' => 'Test content for Bruno CI.'],
+                    'fr' => [
+                        'bruno-paragraph' => [
+                            'type' => 'paragraph',
+                            'data' => ['content' => 'Test content for Bruno CI.'],
+                        ],
+                    ],
                 ],
                 'active' => true,
                 'category_id' => $category->id,

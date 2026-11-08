@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Articles\Schemas;
 
+use App\Models\Article;
 use App\Models\Category;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Set;
@@ -22,10 +24,32 @@ class ArticleForm
         return $schema
             ->columns(3)
             ->components([
+                Placeholder::make('translation_progress')
+                    ->hiddenLabel()
+                    ->content('Le service choisi traduit l’article à partir du français. Reste sur cette page : le résultat s’affichera ici.')
+                    ->visible(fn (mixed $livewire): bool => is_object($livewire) && filled($livewire->translationAgentId ?? null))
+                    ->columnSpanFull(),
                 TextInput::make('title')
                     ->label('Titre')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                    ->helperText(function (mixed $livewire): ?string {
+                        $locale = is_object($livewire) ? ($livewire->activeLocale ?? null) : null;
+
+                        if (! is_string($locale) || $locale === Article::DEFAULT_LOCALE) {
+                            return null;
+                        }
+
+                        return 'Les blocs français restent affichés. Le bouton Traduire les passe dans les autres langues.';
+                    })
+                    ->afterStateUpdated(function (Set $set, ?string $state, mixed $livewire): void {
+                        $locale = is_object($livewire) ? ($livewire->activeLocale ?? null) : null;
+
+                        if ($locale !== Article::DEFAULT_LOCALE) {
+                            return;
+                        }
+
+                        $set('slug', Str::slug((string) $state));
+                    })
                     ->required(),
                 TextInput::make('slug')
                     ->label('Slug')
@@ -59,9 +83,16 @@ class ArticleForm
                             ->label('Paragraphe')
                             ->icon(Heroicon::OutlinedBars3BottomLeft)
                             ->schema([
-                                Textarea::make('content')
+                                RichEditor::make('content')
                                     ->label('Paragraphe')
                                     ->required()
+                                    ->json(false)
+                                    ->fileAttachments(false)
+                                    ->toolbarButtons([
+                                        ['bold', 'italic', 'underline', 'link'],
+                                        ['h2', 'h3'],
+                                        ['bulletList', 'orderedList', 'blockquote'],
+                                    ])
                                     ->columnSpanFull(),
                             ]),
                         Block::make('image')
