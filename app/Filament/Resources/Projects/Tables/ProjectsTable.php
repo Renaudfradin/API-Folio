@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Tables;
 
+use App\Enums\Stack;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectsTable
 {
@@ -46,6 +48,28 @@ class ProjectsTable
                     ->boolean(),
             ])
             ->filters([
+                SelectFilter::make('stack')
+                    ->label('Stack')
+                    ->options(Stack::class)
+                    ->multiple()
+                    ->searchable()
+                    ->native(false)
+                    ->query(function (Builder $query, array $data): Builder {
+                        $values = array_values(array_filter(
+                            $data['values'] ?? [],
+                            fn (mixed $value): bool => filled($value),
+                        ));
+
+                        if ($values === []) {
+                            return $query;
+                        }
+
+                        return $query->where(function (Builder $query) use ($values): void {
+                            foreach ($values as $value) {
+                                $query->orWhereJsonContains('stack', $value);
+                            }
+                        });
+                    }),
                 SelectFilter::make('active')
                     ->options([
                         1 => 'Actif',
