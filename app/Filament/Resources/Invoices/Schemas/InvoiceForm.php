@@ -89,6 +89,7 @@ class InvoiceForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('Lignes')
+                    ->columnSpanFull()
                     ->schema([
                         Repeater::make('lines')
                             ->hiddenLabel()
@@ -143,6 +144,7 @@ class InvoiceForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('Émetteur')
+                    ->columnSpanFull()
                     ->description('Repris de la fiche émetteur, et enregistré sur ce document.')
                     ->collapsed()
                     ->columns(2)
